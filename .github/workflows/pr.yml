@@ -1,12 +1,12 @@
 name: CI
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
 
 jobs:
   build:
-    name: Build, Test and Deploy
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -15,7 +15,3 @@ jobs:
           toolchain: stable
       - run: (test -x $HOME/.cargo/bin/mdbook || cargo install --vers "^0.4" mdbook)
       - run: mdbook build && mdbook test
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book
