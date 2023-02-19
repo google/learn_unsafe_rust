@@ -60,6 +60,16 @@ It's also currently invalid for `Vec<T>` to have a null pointer for its buffer! 
 
 Note that Rust's default representation for types is not stable! What might be a valid bit pattern one day may become invalid later, unless you're only relying on things that are known to be invariant.
 
+### `str`
+
+The string slice type `str` does not actually have any validity constraints: Despite being only for UTF-8 encoded strings, it is valid for `str`s to be in any bit pattern, provided you do not call any methods on the string that are not about directly accessing the memory behind it.
+
+Basically, the UTF-8 validity of `str` is an implicit safety requirement for most of its methods, however it is fine to _hold on to_ an `&str` that points to random bytes.
+
+This is something that can be relied on when doing things like manipulating or constructing `str`s byte-by-byte, where there may be intermediate invalid states.
+
+Of course, reference types like `&str` must still satisfy all of the rules about reference validity (being non-null, etc).
+
 ### Invalid values for general library types
 
 In general, types may have various invalid values based on their internal representation (which may not be stable!).
