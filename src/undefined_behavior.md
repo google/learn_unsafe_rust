@@ -1,5 +1,9 @@
 # Undefined behavior
 
+> _“People shouldn't call for demons unless they really mean what they say.”_
+>
+> — _C.S. Lewis, The Last Battle_
+
 "Undefined behavior" is a bit of a strange notion. On one hand, the reference
 [clearly defines][reference_ub] some (but not all) causes of undefined behavior.
 This list includes some causes that are generally well-known: dereferencing a
