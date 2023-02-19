@@ -79,7 +79,7 @@ As a library user you may not assume anything about the representation of a libr
 ## When you might end up making an invalid value
 
 
-Invalid values have a chance to crop up when you're reinterpreting a chunk of memory as a value of a different type. This can happen when calling[`mem::transmute()`] and [`mem::transmute_copy()`], or when casting a reference to a region of memory into one of a different type. The value need not be on the stack to be considered invalid: if you gin up an `&bool` that points to a bit pattern that is not a valid `bool`, that is instantly UB even if you don't read from the reference.
+Invalid values have a chance to crop up when you're reinterpreting a chunk of memory as a value of a different type. This can happen when calling [`mem::transmute()`], [`mem::transmute_copy()`], or [`mem::zeroed()`], or when casting a reference to a region of memory into one of a different type. The value need not be on the stack to be considered invalid: if you gin up an `&bool` that points to a bit pattern that is not a valid `bool`, that is instantly UB even if you don't read from the reference.
 
 They can also happen when receiving values over FFI where either the signature of the function is incorrect (e.g. saying an FFI function accepts `bool` when the other side thinks it accepts a `u8`), or where there are differences in notions of validity across languages.
 
@@ -118,5 +118,6 @@ This is not an exhaustive list: ultimately, having an invalid value is UB and it
  [unaligned]: ../core_unsafety/dangling_and_unaligned_pointers.md
  [`mem::transmute()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute.html
  [`mem::transmute_copy()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute_copy.html
+ [`mem::zeroed()`]: https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html
  [`NonNull<T>`]: https://doc.rust-lang.org/stable/std/ptr/struct.NonNull.html
  [reprc-enum]: https://doc.rust-lang.org/reference/type-layout.html#reprc-field-less-enums
