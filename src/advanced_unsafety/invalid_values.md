@@ -129,7 +129,7 @@ This is not an exhaustive list: ultimately, having an invalid value is UB and it
 
 
  [unaligned]: ../core_unsafety/dangling_and_unaligned_pointers.md
- [uninit-chapter]: ../undef_memory.md
+ [uninit-chapter]: ../advanced_unsafe/uninitialized.md
  [`mem::transmute()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute.html
  [`mem::transmute_copy()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute_copy.html
  [`mem::zeroed()`]: https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html
