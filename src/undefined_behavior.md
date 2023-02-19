@@ -204,6 +204,9 @@ It's often very _useful_ to think of potential optimizations the optimizer may
 do around your code, but that is not sufficient for evaluating whether your
 code has UB.
 
+Throughout this book there will be examples of how various optimizations may
+break code exhibiting undefined behavior, however it is crucial to learn the
+rule behind the breakage rather than just the nature of the optimization.
 
 [reference_ub]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
 [ferrocene]: https://ferrous-systems.com/blog/the-ferrocene-language-specification-is-here/
