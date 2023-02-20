@@ -1,5 +1,9 @@
 # Undefined behavior
 
+> _“People shouldn't call for demons unless they really mean what they say.”_
+>
+> — _C.S. Lewis, The Last Battle_
+
 "Undefined behavior" is a bit of a strange notion. On one hand, the reference
 [clearly defines][reference_ub] some (but not all) causes of undefined behavior.
 This list includes some causes that are generally well-known: dereferencing a
@@ -159,6 +163,50 @@ itself. Therefore, unsafe blocks must be manually checked to verify that the
 code written upholds all of the conditions required to avoid undefined behavior.
 Any unsafe code that can trigger undefined behavior _even when its safey
 conditions are upheld_ is unsound.
+
+
+## Common misconceptions
+
+There are a couple misconceptions about UB that often muddy the water when talking about it.
+
+### "If it works, it's sound"
+
+Undefined Behavior may be present even if the compiler does end up compiling the
+code according to the programmer's intent. A future version of the compiler may
+behave differently, or future changes to an innocuous portion of the code may
+cause it to fall to the other side of an invisible threshhold. Technically it
+may even compile differently but only on Tuesdays, though that type of
+nondeterminism is generally rare.
+
+
+### "UB is about what the optimizer is allowed to do"
+
+This is to _some extent_ true but the actual situation is far more nuanced.
+
+It's common for people to think about UB in terms of what an optimizer "is and
+isn't allowed to do", and in terms of optimizations they know can occur. For
+example, it's pretty straightforward to see that sneakily writing to memory
+that you're not supposed to can cause undefined behavior when the optimizer
+decides to elide a memory read that occurs after your illicit write.
+
+Firstly, some forms of UB just have to do with rules the underlying processor
+enforces.
+
+But more than that, there are plenty of miscompiles that are hard to explain by
+simply thinking in terms why the optimizer would do such a thing.
+
+This is because it's less about what the optimizer is "allowed to do" and more
+about what it is "allowed to assume". When a code has UB, the optimizer may
+make an incorrect assumption that snowballs into bigger and bigger incorrect
+assumptions that cause very unexpected behavior.
+
+It's often very _useful_ to think of potential optimizations the optimizer may
+do around your code, but that is not sufficient for evaluating whether your
+code has UB.
+
+Throughout this book there will be examples of how various optimizations may
+break code exhibiting undefined behavior, however it is crucial to learn the
+rule behind the breakage rather than just the nature of the optimization.
 
 [reference_ub]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
 [ferrocene]: https://ferrous-systems.com/blog/the-ferrocene-language-specification-is-here/
