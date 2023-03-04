@@ -39,7 +39,7 @@ There are a lot of other reasons that a pointer type may not be valid, but these
 
 An open question in Rust's model is whether references and reference-like types have "shallow" validity (roughly, the rules above), or "deep" validity (where a reference is valid only when the pointed-to data is valid, and that applies transitively). This issue is tracked upstream as [UGC #77](https://github.com/rust-lang/unsafe-code-guidelines/issues/77). The current discussion seems to skew towards shallow validity as opposed to deep validity, but this may change.
 
-For the purposes of _writing_ unsafe code, it is convenient to imagine the boundary as being such that `&`/`&mut` references should never point to invalid memory. However, when auditing existing unsafe code it may be okay to allow scenarios that assume only shallow validity is required, depending on your risk appetite.
+For the purposes of _writing_ unsafe code, it is convenient to imagine the boundary as being such that `&T`/`&mut T` references should never point to memory containing invalid values of type `T`. However, when auditing existing unsafe code it may be okay to allow scenarios that assume only shallow validity is required, depending on your risk appetite.
 
 ### Enums with invalid values
 
