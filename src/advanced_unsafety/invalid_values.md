@@ -37,7 +37,7 @@ There are a lot of other reasons that a pointer type may not be valid, but these
 #### "shallow" vs "deep" validity
 
 
-An open question in Rust's model is whether references and reference-like types have "shallow" validity (roughly, the rules above), or "deep" validity (where a reference is valid only when the pointed-to data is valid, and that applies transitively). This issue is tracked upstream as [UGC #77](https://github.com/rust-lang/unsafe-code-guidelines/issues/77). The current discussion seems to skew towards shallow validity as opposed to deep validity, but this code change.
+An open question in Rust's model is whether references and reference-like types have "shallow" validity (roughly, the rules above), or "deep" validity (where a reference is valid only when the pointed-to data is valid, and that applies transitively). This issue is tracked upstream as [UGC #77](https://github.com/rust-lang/unsafe-code-guidelines/issues/77). The current discussion seems to skew towards shallow validity as opposed to deep validity, but this may change.
 
 For the purposes of _writing_ unsafe code, it is convenient to imagine the boundary as being such that `&`/`&mut` references should never point to invalid memory. However, when auditing existing unsafe code it may be okay to allow scenarios that assume only shallow validity is required, depending on your risk appetite.
 
@@ -98,7 +98,9 @@ As a library user you may not assume anything about the representation of a libr
 
 Invalid values have a chance to crop up when you're reinterpreting a chunk of memory as a value of a different type. This can happen when calling [`mem::transmute()`], [`mem::transmute_copy()`], or [`mem::zeroed()`], when casting a reference to a region of memory into one of a different type, or when accessing the wrong variant of a `union`. The value need not be on the stack to be considered invalid: if you gin up an `&bool` that points to a bit pattern that is not a valid `bool`, that can instantly be UB (in a "deep validity" world) even if you don't read from the reference.
 
-They can also happen when receiving values over FFI where either the signature of the function is incorrect (e.g. saying an FFI function accepts `bool` when the other side thinks it accepts a `u8`), or where there are differences in notions of validity across languages.
+Note that since [uninitialized memory][uninit-chapter] is a type of invalid value, any way to produce uninitialized memory (including [`mem::uninitialized()`]) is also a way of producing invalid values.
+
+Invalid values can also be created when receiving values over FFI where either the signature of the function is incorrect (e.g. saying an FFI function accepts `bool` when the other side thinks it accepts a `u8`), or where there are differences in notions of validity across languages.
 
 A subtle case of this comes up occasionally in FFI code due to differences in expectations between how enums are used in Rust and C.
 
@@ -137,6 +139,7 @@ This is not an exhaustive list: ultimately, having an invalid value is UB and it
  [unaligned]: ../core_unsafety/dangling_and_unaligned_pointers.md
  [uninit-chapter]: ../undef_memory.md
  [`mem::transmute()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute.html
+ [`mem::uninitialized()`]: https://doc.rust-lang.org/stable/std/mem/fn.uninitialized.html
  [`mem::transmute_copy()`]: https://doc.rust-lang.org/stable/std/mem/fn.transmute_copy.html
  [`mem::zeroed()`]: https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html
  [`NonNull<T>`]: https://doc.rust-lang.org/stable/std/ptr/struct.NonNull.html
