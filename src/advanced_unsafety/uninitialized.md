@@ -22,7 +22,7 @@ It is still possible to create uninitialized values using [`MaybeUninit::assume_
 
 ### Padding
 
-Padding bytes in structs and enums are often but not always uninitialized. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
+Padding bytes in structs and enums are uninitialized. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
 
 Reading from padding [always produces uninitialized values][pad-glossary].
 
