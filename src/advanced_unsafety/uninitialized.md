@@ -22,10 +22,11 @@ It is still possible to create uninitialized values using [`MaybeUninit::assume_
 
 ### Padding
 
+The authors are not yet sure of the specifics here, see [UGC #395][ugc395]. For now, treat the below as advice on how to never make a mistake wrt padding, but there may be some leeway in the actual semantics.
+
 Padding bytes in structs and enums are uninitialized. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
 
 Reading from padding [always produces uninitialized values][pad-glossary].
-
 
 
 ### Moved-from values
@@ -122,6 +123,7 @@ This is not an exhaustive list: ultimately, having an uninitialized value is UB 
  [`Vec::with_capacity()`]: https://doc.rust-lang.org/stable/std/vec/struct.Vec.html#method.with_capacity
  [`Allocator::allocate()`]: https://doc.rust-lang.org/stable/std/alloc/trait.Allocator.html#tymethod.allocate
  [`Allocator::allocate_zeroed()`]: https://doc.rust-lang.org/stable/std/alloc/trait.Allocator.html#method.allocate_zeroed
+ [ugc-395]: https://github.com/rust-lang/unsafe-code-guidelines/issues/395
 
 
  [^1]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the destructor is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
