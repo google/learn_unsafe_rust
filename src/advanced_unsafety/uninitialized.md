@@ -6,7 +6,7 @@
 
 While we have covered [invalid values], there's another thing that is a kind of invalid value, but has nothing to do with actual bit patterns: Uninitialized memory.
 
-An easy way to think about uninitialized memory is that there's an additional value (often called `undef` using LLVM's term for it) that does not map to any concrete bit pattern, but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
+An easy way to think about uninitialized memory is that there's an additional value that does not map to any concrete bit pattern, but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
 
 If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts.
 
