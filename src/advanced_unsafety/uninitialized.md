@@ -6,25 +6,39 @@
 
 While we have covered [invalid values], there's another thing that is a kind of invalid value, but has nothing to do with actual bit patterns: Uninitialized memory.
 
-An easy way to think about uninitialized memory is that there's an additional value that does not map to any concrete bit pattern, but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
-
-If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts.
 
 ## Safely working with uninitialized memory
 
-The basic rule of thumb is: never refer to uninitialized values as anything other than a raw pointer or wrapped in [`MaybeUninit<T>`]. Having a stack value or temporary that is uninitialized and has a type that is not `MaybeUninit<T>`  (or an array of `MaybeUninit`s) is always undefined behavior.
+The basic rule of thumb is: never refer to uninitialized memory with anything other than a raw pointer something wrapped in [`MaybeUninit<T>`]. Having a stack value or temporary that is uninitialized and has a type that is not `MaybeUninit<T>`  (or an array of `MaybeUninit`s) is always undefined behavior.
 
-If you need to write to an uninitialized buffer in memory, treat it as `&mut [MaybeUninit<u8>]`. If you need to piecewise initialize a struct, use `MaybeUninit<Struct>`.
+A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
+
+Any attempt to read this byte as a `u8` will be UB, and the presence of this byte in non-padding locations is considered UB for most types. The exceptions to this all fall out of treating it as a property of the byte:
+
+ - Zero-sized types do not care about initialized-ness, since they do not have bytes
+ - Unions do not care about initialized-ness if they have a variant that does not care about initialized-ness
+ - [`MaybeUninit<T>`] does not care about initializedness since it is internally a union of `T` and a zero-sized type.
+ - `[MaybeUninit<T>; N]` [does not care about initializedness][arr-maybeuninit] since it doesn't have any bytes that care about initializedness
+ 
+
+Fundamentally, initializedness is a property of memory, but whether or not initializedness matters is a property of the *type*. For types that care about initializedness, typed operations working with uninitialized memory are typically UB, and having a value that contains uninitialized memory is immediately UB.
+
+[`ptr::copy`] is explicitly an *untyped* copy, and thus it will copy all bytes, including padding, and including initialized-ness, to the destination, regardless of the type `T`.
+
+Most other operations copying a type (for example, `*ptr` and `mem::transmute_copy`) will be typed, and will thus ignore padding and be UB if ever fed uninitialized memory in non-padding positions. This also applies to `let x = y` and `mem::transmute`, however in those cases if the source data were uninitialized that would already have been UB.
 
 
-Similarly with invalid values, there's are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized values. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`, but when auditing unsafe code there may be causes where a reference to uninitialized values is actually safe as long as no uninitialized value is read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
+If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts. It's also useful to e.g. refer to an uninitialized buffer with things like `&mut [MaybeUninit<u8>]`.
+
+
+Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized memory. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`, but when auditing unsafe code there may be causes where a reference to uninitialized values is actually safe as long as no uninitialized value is read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
 
 
 ## Sources of uninitialized memory
 
 ### `mem::uninitialized()` and `MaybeUninit::assume_init()`
 
-[`mem::uninitialized()`] is a deprecated API that has a very tempting shape, it lets you do things like `let x = mem::uninitialized()` for cases when you want to construct the value in bits. It's basically _always_ UB to use, since it immediately sets `x` to uninitialized memory, which is UB, since uninitialized memory is a type of invalid value, and it's unsound to produce invalid values.
+[`mem::uninitialized()`] is a deprecated API that has a very tempting shape, it lets you do things like `let x = mem::uninitialized()` for cases when you want to construct the value in bits. It's almost _always_ UB to use, since it immediately sets `x` to uninitialized memory, which is UB, since uninitialized memory is a type of invalid value for almost all types, and it's unsound to produce invalid values.
 
 Use [`MaybeUninit<T>`] instead.
 
@@ -38,6 +52,7 @@ The "usually but not always" caveat can be usefully framed as "padding bytes are
 
 For example, treating an initialized byte buffer as an `&Struct` and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an `&mut Struct` and then writing a new `Struct` to it will lead to those bytes becoming uninitialized since the `Struct` copy will "copy" the uninitialized padding bytes. Similarly, using `mem::transmute()` (or `mem::zeroed()`) to transmute a byte buffer to a `Struct` will have the padding be uninitialized, because a typed copy of the `Struct` is occurring.
 
+Because [`ptr::copy`] is an untyped copy, it can be used to copy over explicitly-initialized padding.
 
 See the discussion in [UGC #395][ugc395] for more examples.
 
@@ -150,6 +165,8 @@ This is not an exhaustive list: ultimately, having an uninitialized value is UB 
  [ugc-395]: https://github.com/rust-lang/unsafe-code-guidelines/issues/395
  [UGC #77]: https://github.com/rust-lang/unsafe-code-guidelines/issues/77
  [UGC #346]: https://github.com/rust-lang/unsafe-code-guidelines/issues/346
+ [arr-maybeuninit]: https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html#initializing-an-array-element-by-element
+ [`ptr::copy`]: https://doc.rust-lang.org/stable/std/ptr/fn.copy.html
 
  [^1]: Be sure to use `&[MaybeUninit<u8>]` if treating a type with uninitialized padding as manipulatable memory!
  [^2]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the destructor is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
