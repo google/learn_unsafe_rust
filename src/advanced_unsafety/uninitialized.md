@@ -9,7 +9,7 @@ While we have covered [invalid values], there's another thing that is a kind of 
 
 ## Safely working with uninitialized memory
 
-The basic rule of thumb is: never refer to uninitialized memory with anything other than a raw pointer something wrapped in [`MaybeUninit<T>`]. Having a stack value or temporary that is uninitialized and has a type that is not `MaybeUninit<T>`  (or an array of `MaybeUninit`s) is always undefined behavior.
+The basic rule of thumb is: never refer to uninitialized memory with anything other than a raw pointer or something wrapped in [`MaybeUninit<T>`]. Having a stack value or temporary that is uninitialized and has a type that is not `MaybeUninit<T>`  (or an array of `MaybeUninit`s) is always undefined behavior.
 
 A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
 
