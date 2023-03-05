@@ -60,7 +60,7 @@ See the discussion in [UGC #395][ugc395] for more examples.
 
 Reading a union type as the wrong variant can lead to reading uninitialized memory, for example if the union was initialized to a smaller variant, or if the padding of the two variants doesn't overlap perfectly.
 
-Rust does not have strict aliasing like C and C++: type punning with a union can be safe as long as the punning does not cause invalid or uninitialized values to show up on the other side.
+Rust does not have strict aliasing like C and C++: type punning with a union is safe as long as the corresponding transmute is safe.
 
 [`MaybeUninit<T>`] is actually just a union between `T` and `()` under the hood: the rules for correct usage of `MaybeUninit` are the same as the rules for correct usage of a union.
 
