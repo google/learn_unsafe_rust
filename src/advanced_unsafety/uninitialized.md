@@ -13,7 +13,7 @@ The basic rule of thumb is: never refer to uninitialized memory with anything ot
 
 A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
 
-Any attempt to read this byte as a `u8` will be UB, and the presence of this byte in non-padding locations is considered UB for most types. The exceptions to this all fall out of treating it as a property of the byte:
+Any attempt to read uninitialized bytes as an integer will be UB, and the presence of this byte in non-padding locations is considered UB for most types. The exceptions to this all fall out of treating it as a property of the byte:
 
  - Zero-sized types do not care about initialized-ness, since they do not have bytes
  - Unions do not care about initialized-ness if they have a variant that does not care about initialized-ness
