@@ -10,6 +10,16 @@ An easy way to think about uninitialized memory is that there's an additional va
 
 If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts.
 
+## Safely working with uninitialized memory
+
+The basic rule of thumb is: never refer to uninitialized values as anything other than a raw pointer or wrapped in `MaybeUninit<T>`. Having a stack value or temporary that is uninitialized and has a type that is not `MaybeUninit<T>`  (or an array of `MaybeUninit`s) is always undefined behavior.
+
+If you need to write to an uninitialized buffer in memory, treat it as `&mut [MaybeUninit<u8>]`. If you need to piecewise initialize a struct, use `MaybeUninit<Struct>`.
+
+
+Similarly with invalid values, there's are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized values. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`, but when auditing unsafe code there may be causes where a reference to uninitialized values is actually safe as long as no uninitialized value is read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
+
+
 ## Sources of uninitialized memory
 
 ### `mem::uninitialized()` and `MaybeUninit::assume_init()`
@@ -22,14 +32,23 @@ It is still possible to create uninitialized values using [`MaybeUninit::assume_
 
 ### Padding
 
-The authors are not yet sure of the specifics here, see [UGC #395][ugc395]. For now, treat the below as advice on how to never make a mistake wrt padding, but there may be some leeway in the actual semantics.
+Padding bytes in structs and enums are [usually but not always uninitialized][pad-glossary]. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
 
-Padding bytes in structs and enums are uninitialized. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
+The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of types, not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type[^1], and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.
 
-Reading from padding [always produces uninitialized values][pad-glossary].
+For example, treating an initialized byte buffer as an `&Struct` and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an `&mut Struct` and then writing a new `Struct` to it will lead to those bytes becoming uninitialized since the `Struct` copy will "copy" the uninitialized padding bytes. Similarly, using `mem::transmute()` (or `mem::zeroed()`) to transmute a byte buffer to a `Struct` will have the padding be uninitialized, because a typed copy of the `Struct` is occurring.
 
 
-### Moved-from values
+See the discussion in [UGC #395][ugc395] for more examples.
+
+
+### Freshly allocated memory
+
+Freshly allocated memory (e.g. the yet-unused bytes in [`Vec::with_capacity()`] or just the result of [`Allocator::allocate()`]) is usually uninitialized. You can use APIs like [`Allocator::allocate_zeroed()`] if you wish to avoid this, though you can still end up making [invalid values] the same way you can with [`mem::zeroed()`].
+
+Generally after allocating memory one should make sure that the only part of that memory being read from is known to have been written to. This can be tricky in situations around complex data structures like probing hashtables where you have a buffer which only has some segments initialized, determined by complex conditions.
+
+### Not exactly uninitialized: Moved-from values
 
 The following code is UB:
 
@@ -42,24 +61,28 @@ let ptr = &x as *const String;
 v.push(x); // move x into the vector
 
 unsafe {
-    // reads from moved-from memory
+    // dangling pointer reads from moved-from memory
     let ghost = ptr::read(ptr);
 }
 ```
 
 Any type of move will do this, even when you "move" the value into a different variable with stuff like `let y = x;`.
 
+This isn't _quite_ uninitialized: it's just that using after a move is straight up UB in Rust. In particular, unlike most pointers to uninitialized values, this dangling pointer is unsound to *write* to as well.
+
+Working with dangling pointers can often lead to similar problems as working with uninitialized values.
+
 Note that Rust does let you "partially move" out of fields of a struct, in such a case the whole struct is now no longer a valid value for its type, but you are still allowed to "use" the struct to look at other fields, and the value as a whole is no longer usable. When doing such things, make sure there are no pointers that still think the struct is whole and valid.
 
 #### Caveat: `ptr::drop_in_place()`, `ManuallyDrop::drop()`, and `ptr::read()`
 
-[`ptr::drop_in_place()`] and [`ManuallyDrop::drop()`] are interesting: they both call the destructor[^1] on a value (or a pointed-to value in the case of `drop_in_place`). From the perspective of safety they are identical; they are just different APIs for dealing with manually calling destructors.
+[`ptr::drop_in_place()`] and [`ManuallyDrop::drop()`] are interesting: they both call the destructor[^2] on a value (or a pointed-to value in the case of `drop_in_place`). From the perspective of safety they are identical; they are just different APIs for dealing with manually calling destructors.
 
 [`ManuallyDrop::drop()`] makes the following claim:
 
 > Other than changes made by the destructor itself, the memory is left unchanged, and so as far as the compiler is concerned still holds a bit-pattern which is valid for the type T.
 
-In other words, Rust does _not_ consider these operations to do the same invalidation as a regular "move from" operation, even though they have a similar feel.
+In other words, Rust does _not_ consider these operations to do the same invalidation as a regular "move from" operation, even though they may have a similar feel. They do not create dangling pointers, and they do not themselves overwrite the memory with an uninitialized value.
 
 There is an [open issue][ugc-394] about whether `Drop::drop()` is itself allowed to produce uninitialized or invalid memory, so it may not be possible to rely on this in a generic context.
 
@@ -69,13 +92,6 @@ There is an [open issue][ugc-394] about whether `Drop::drop()` is itself allowed
 For all of these APIs, actually _using_ the dropped or read-from memory may still be fraught depending on the invariants of the value; it's quite easy to cause a double-free by materializing an owned value from the original data after it has already been read-from or dropped.
 
 However, they do not produce uninitialized memory.
-
-
-### Freshly allocated memory
-
-Freshly allocated memory (e.g. the yet-unused bytes in [`Vec::with_capacity()`] or just the result of [`Allocator::allocate()`]) is usually uninitialized. You can use APIs like [`Allocator::allocate_zeroed()`] if you wish to avoid this, though you can still end up making [invalid values] the same way you can with [`mem::zeroed()`].
-
-Generally after allocating memory one should make sure that the only part of that memory being read from is known to have been written to. This can be tricky in situations around complex data structures like probing hashtables where you have a buffer which only has some segments initialized, determined by complex conditions.
 
 ## When you might end up making an uninitialized value
 
@@ -108,6 +124,7 @@ Often when reading from uninitialized memory you'll see reads to the same, uncha
 This is not an exhaustive list: ultimately, having an uninitialized value is UB and it remains illegal even if there are no optimizations that will break.
 
 
+
  [invalid values]: ../core_unsafety/invalid_values.md
  [`mem::uninitialized()`]: https://doc.rust-lang.org/stable/std/mem/fn.uninitialized.html
  [`mem::zeroed()`]: https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html
@@ -124,7 +141,9 @@ This is not an exhaustive list: ultimately, having an uninitialized value is UB 
  [`Allocator::allocate()`]: https://doc.rust-lang.org/stable/std/alloc/trait.Allocator.html#tymethod.allocate
  [`Allocator::allocate_zeroed()`]: https://doc.rust-lang.org/stable/std/alloc/trait.Allocator.html#method.allocate_zeroed
  [ugc-395]: https://github.com/rust-lang/unsafe-code-guidelines/issues/395
+ [UGC #77]: https://github.com/rust-lang/unsafe-code-guidelines/issues/77
+ [UGC #346]: https://github.com/rust-lang/unsafe-code-guidelines/issues/346
 
-
- [^1]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the destructor is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
+ [^1]: Be sure to use `&[MaybeUninit<u8>]` if treating a type with uninitialized padding as manipulatable memory!
+ [^2]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the destructor is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
  
