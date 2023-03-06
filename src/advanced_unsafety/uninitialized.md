@@ -13,10 +13,10 @@ The basic rule of thumb is: never refer to uninitialized memory with anything ot
 
 A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes _most_ values invalid.
 
-Any attempt to read uninitialized bytes as an integer will be UB, and the presence of this byte in non-padding locations is considered UB for most types. The exceptions to this all fall out of treating it as a property of the byte:
+Any attempt to read uninitialized bytes as a "type that cares about initializedness" will be UB, and the presence of this byte in non-padding locations is considered UB for most types. Most types care about initialized-ness; and the list of types that doesn't derives from treating initializedness as a property of the byte:
 
- - Zero-sized types do not care about initialized-ness, since they do not have bytes
- - Unions do not care about initialized-ness if they have a variant that does not care about initialized-ness
+ - Zero-sized types do not care about initializedness, since they do not have bytes
+ - Unions do not care about initializedness if they have a variant that does not care about initialized-ness
  - [`MaybeUninit<T>`] does not care about initializedness since it is internally a union of `T` and a zero-sized type.
  - `[MaybeUninit<T>; N]` [does not care about initializedness][arr-maybeuninit] since it doesn't have any bytes that care about initializedness
  
@@ -31,7 +31,7 @@ Most other operations copying a type (for example, `*ptr` and `mem::transmute_co
 If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts. It's also useful to e.g. refer to an uninitialized buffer with things like `&mut [MaybeUninit<u8>]`.
 
 
-Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized memory. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`. When auditing unsafe code, there may be cases where a references to uninitialized values are actually safe as long as no uninitialized values are read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
+Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized memory. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`. When auditing unsafe code, there may be cases where references to uninitialized values are actually safe as long as no uninitialized values are read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
 
 
 ## Sources of uninitialized memory
