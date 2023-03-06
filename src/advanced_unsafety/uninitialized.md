@@ -25,7 +25,7 @@ Fundamentally, initializedness is a property of memory, but whether or not initi
 
 [`ptr::copy`] is explicitly an *untyped* copy, and thus it will copy all bytes, including padding, and including initialized-ness, to the destination, regardless of the type `T`.
 
-Most other operations copying a type (for example, `*ptr` and `mem::transmute_copy`) will be typed, and will thus ignore padding and be UB if ever fed uninitialized memory in non-padding positions. This also applies to `let x = y` and `mem::transmute`, however in those cases if the source data were uninitialized that would already have been UB.
+Most other operations copying a type (for example, `*ptr` and `mem::transmute_copy`) will be typed, and will thus ignore padding and be UB if ever fed uninitialized memory in non-padding positions (assuming the type involved cares about initializedness). This also applies to `let x = y` and `mem::transmute`, however in those cases if the source data were uninitialized that would already have been UB.
 
 
 If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts. It's also useful to e.g. refer to an uninitialized buffer with things like `&mut [MaybeUninit<u8>]`.
@@ -42,13 +42,15 @@ Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) abo
 
 Use [`MaybeUninit<T>`] instead.
 
-It is still possible to create uninitialized values using [`MaybeUninit::assume_init()`] if you have not, in fact, assured that things are initialized.
+It is still possible to create uninitialized values using [`MaybeUninit::uninit()`] with [`MaybeUninit::assume_init()`] if you have not, in fact, assured that things are initialized.
+
+`mem::uninitialized()` is exactly equivalent to `MaybeUninit::uninit().assume_init()`, but it is deprecated since `MaybeUninit` actually provides the flexibility needed to deal with uninitialized memory safely.
 
 ### Padding
 
 Padding bytes in structs and enums are [usually but not always uninitialized][pad-glossary]. This means that treating a struct as a bag of bytes (by, say, treating `&Struct` as `&[u8; size_of::<Struct>()]` and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized `u8`s.
 
-The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of types, not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type[^1], and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.
+The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of the _access_ (i.e., the _type_), not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type[^1], and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.
 
 For example, treating an initialized byte buffer as an `&Struct` and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an `&mut Struct` and then writing a new `Struct` to it will lead to those bytes becoming uninitialized since the `Struct` copy will "copy" the uninitialized padding bytes. Similarly, using `mem::transmute()` (or `mem::zeroed()`) to transmute a byte buffer to a `Struct` will uninitialize the padding because it performs a typed copy of the `Struct`.
 
@@ -115,6 +117,8 @@ For all of these APIs, actually _using_ the dropped or read-from memory may stil
 
 However, they do not produce uninitialized memory.
 
+Still, it is convenient when writing unsafe code to operate as if these functions produce uninitialized memory on the original source location.
+
 ## When you might end up making an uninitialized value
 
 Some of the APIs and methods above create uninitialized memory in a pretty straightforward way — don't call [`MaybeUninit::assume_init()`] if things are not actually initialized!
@@ -152,6 +156,7 @@ This is not an exhaustive list: ultimately, having an uninitialized value is UB 
  [`mem::zeroed()`]: https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html
  [`MaybeUninit<T>`]: https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html
  [`MaybeUninit::assume_init()`]: https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html#method.assume_init
+ [`MaybeUninit::uninit()`]: https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html#method.uninit
  [`MaybeUninit::write()`]: https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html#method.write
  [pad-glossary]: https://github.com/rust-lang/unsafe-code-guidelines/blob/master/reference/src/glossary.md#padding
  [`ptr::drop_in_place()`]: https://doc.rust-lang.org/stable/std/ptr/fn.drop_in_place.html
