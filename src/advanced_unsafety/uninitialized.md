@@ -92,7 +92,7 @@ unsafe {
 
 Any type of move will do this, even when you "move" the value into a different variable with stuff like `let y = x;`.
 
-This isn't _quite_ uninitialized: it's just that using after a move is straight up UB in Rust. In particular, unlike most pointers to uninitialized values, this dangling pointer is unsound to *write* to as well.
+This isn't _quite_ uninitialized: it's just that using after a move is straight up UB in Rust, much like reading from freed memory. In particular, unlike most pointers to uninitialized values, this dangling pointer is unsound to *write* to as well.
 
 Working with dangling pointers can often lead to similar problems as working with uninitialized values.
 
