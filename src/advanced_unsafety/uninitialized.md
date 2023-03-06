@@ -38,7 +38,7 @@ Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) abo
 
 ### `mem::uninitialized()` and `MaybeUninit::assume_init()`
 
-[`mem::uninitialized()`] is a deprecated API that has a very tempting shape, it lets you do things like `let x = mem::uninitialized()` for cases when you want to construct the value in bits. It's almost _always_ UB to use, since it immediately sets `x` to uninitialized memory, which is UB, since uninitialized memory is a type of invalid value for almost all types, and it's unsound to produce invalid values.
+[`mem::uninitialized()`] is a deprecated API that has a very tempting shape: it lets you do things like `let x = mem::uninitialized()` when you want to construct an uninitialized value. It's _almost always_ UB to use since it immediately sets `x` to uninitialized memory, which is UB because uninitialized memory is an invalid value for almost all types and it's unsound to produce invalid values.
 
 Use [`MaybeUninit<T>`] instead.
 
