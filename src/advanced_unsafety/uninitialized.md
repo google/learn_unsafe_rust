@@ -21,7 +21,7 @@ Any attempt to read uninitialized bytes as an integer will be UB, and the presen
  - `[MaybeUninit<T>; N]` [does not care about initializedness][arr-maybeuninit] since it doesn't have any bytes that care about initializedness
  
 
-Fundamentally, initializedness is a property of memory, but whether or not initializedness matters is a property of the *type*. For types that care about initializedness, typed operations working with uninitialized memory are typically UB, and having a value that contains uninitialized memory is immediately UB.
+Fundamentally, initializedness is a property of memory, but whether or not initializedness matters is a property of the access (in particular, of the *type* used by the access). For types that care about initializedness, typed operations working with uninitialized memory are typically UB, and having a value that contains uninitialized memory is immediately UB.
 
 [`ptr::copy`] is explicitly an *untyped* copy, and thus it will copy all bytes, including padding, and including initialized-ness, to the destination, regardless of the type `T`.
 
