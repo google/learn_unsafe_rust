@@ -31,7 +31,7 @@ Most other operations copying a type (for example, `*ptr` and `mem::transmute_co
 If you explicitly wish to work with uninitialized and partially-initialized types, [`MaybeUninit<T>`] is a useful abstraction since it can be constructed with no overhead and then written to in parts. It's also useful to e.g. refer to an uninitialized buffer with things like `&mut [MaybeUninit<u8>]`.
 
 
-Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized memory. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`, but when auditing unsafe code there may be causes where a reference to uninitialized values is actually safe as long as no uninitialized value is read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
+Similarly with invalid values, there are open issues ([UGC #77], [UGC #346]) about whether it is UB to have _references_ to uninitialized memory. When writing unsafe code we recommend you avoid creating such references, choosing to always use `MaybeUninit`. When auditing unsafe code, there may be cases where a references to uninitialized values are actually safe as long as no uninitialized values are read out of it. In particular, [UGC #346] indicates that it is extremely unlikely that having `&mut` references to uninitialized values will be immediately UB.
 
 
 ## Sources of uninitialized memory
