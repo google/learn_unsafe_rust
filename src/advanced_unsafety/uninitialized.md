@@ -50,7 +50,7 @@ Padding bytes in structs and enums are [usually but not always uninitialized][pa
 
 The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of types, not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type[^1], and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.
 
-For example, treating an initialized byte buffer as an `&Struct` and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an `&mut Struct` and then writing a new `Struct` to it will lead to those bytes becoming uninitialized since the `Struct` copy will "copy" the uninitialized padding bytes. Similarly, using `mem::transmute()` (or `mem::zeroed()`) to transmute a byte buffer to a `Struct` will have the padding be uninitialized, because a typed copy of the `Struct` is occurring.
+For example, treating an initialized byte buffer as an `&Struct` and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an `&mut Struct` and then writing a new `Struct` to it will lead to those bytes becoming uninitialized since the `Struct` copy will "copy" the uninitialized padding bytes. Similarly, using `mem::transmute()` (or `mem::zeroed()`) to transmute a byte buffer to a `Struct` will uninitialize the padding because it performs a typed copy of the `Struct`.
 
 Because [`ptr::copy`] is an untyped copy, it can be used to copy over explicitly-initialized padding.
 
