@@ -305,7 +305,7 @@ conditions are upheld</em> is unsound.</p>
 <p>Undefined Behavior may be present even if the compiler does end up compiling the
 code according to the programmer's intent. A future version of the compiler may
 behave differently, or future changes to an innocuous portion of the code may
-cause it to fall to the other side of an invisible threshhold. Technically it
+cause it to fall to the other side of an invisible threshold. Technically it
 may even compile differently but only on Tuesdays, though that type of
 nondeterminism is generally rare.</p>
 <h3 id="ub-is-about-what-the-optimizer-is-allowed-to-do"><a class="header" href="#ub-is-about-what-the-optimizer-is-allowed-to-do">&quot;UB is about what the optimizer is allowed to do&quot;</a></h3>
@@ -318,9 +318,9 @@ decides to elide a memory read that occurs after your illicit write.</p>
 <p>Firstly, some forms of UB just have to do with rules the underlying processor
 enforces.</p>
 <p>But more than that, there are plenty of miscompiles that are hard to explain by
-simply thinking in terms why the optimizer would do such a thing.</p>
-<p>This is because it's less about what the optimizer is &quot;allowed to do&quot; and more
-about what it is &quot;allowed to assume&quot;. When a code has UB, the optimizer may
+simply thinking in terms of why the optimizer would do such a thing.</p>
+<p>This is because it's less about what the optimizer is allowed to <em>do</em> and more
+about what it is allowed to <em>assume</em>. When a program has UB, the optimizer may
 make an incorrect assumption that snowballs into bigger and bigger incorrect
 assumptions that cause very unexpected behavior.</p>
 <p>It's often very <em>useful</em> to think of potential optimizations the optimizer may
