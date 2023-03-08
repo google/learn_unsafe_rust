@@ -156,12 +156,12 @@ arrangement of safe code can cause undefined behavior. That's a lot to consider!
 
 ### Unsafe code must accurately document its safety conditions, or it's unsound
 
-The "safey conditions" for unsafe traits and functions are just the conditions
+The "safety conditions" for unsafe traits and functions are just the conditions
 under which it does not trigger undefined behavior. These conditions aren't
 checked by the compiler, they're checked by the people who write the code
 itself. Therefore, unsafe blocks must be manually checked to verify that the
 code written upholds all of the conditions required to avoid undefined behavior.
-Any unsafe code that can trigger undefined behavior _even when its safey
+Any unsafe code that can trigger undefined behavior _even when its safety
 conditions are upheld_ is unsound.
 
 
