@@ -174,7 +174,7 @@ There are a couple misconceptions about UB that often muddy the water when talki
 Undefined Behavior may be present even if the compiler does end up compiling the
 code according to the programmer's intent. A future version of the compiler may
 behave differently, or future changes to an innocuous portion of the code may
-cause it to fall to the other side of an invisible threshhold. Technically it
+cause it to fall to the other side of an invisible threshold. Technically it
 may even compile differently but only on Tuesdays, though that type of
 nondeterminism is generally rare.
 
@@ -193,10 +193,10 @@ Firstly, some forms of UB just have to do with rules the underlying processor
 enforces.
 
 But more than that, there are plenty of miscompiles that are hard to explain by
-simply thinking in terms why the optimizer would do such a thing.
+simply thinking in terms of why the optimizer would do such a thing.
 
-This is because it's less about what the optimizer is "allowed to do" and more
-about what it is "allowed to assume". When a code has UB, the optimizer may
+This is because it's less about what the optimizer is allowed to _do_ and more
+about what it is allowed to _assume_. When a program has UB, the optimizer may
 make an incorrect assumption that snowballs into bigger and bigger incorrect
 assumptions that cause very unexpected behavior.
 
