@@ -32,7 +32,13 @@ Most smart pointer types like `Box<T>` and `Rc<T>` are invalid when null. Librar
 
 It's also currently invalid for `Vec<T>` to have a null pointer for its buffer! `Vec<T>` uses [`NonNull<T>`] internally, and empty vectors use a pointer value equal to the alignment of `T`.
 
-There are a lot of other reasons that a pointer type may not be valid, but these are the ones where the bit pattern is statically known to be invalid regardless of context. We'll be covering these in more depth in other chapters (@@note: where?), but, for example, all of these pointers must not only be non-null, they must also point to an actual valid instance of that type at all times (except `Vec<T>`, which is allowed to refer to invalid-but-aligned-and-non-null memory when it is empty)
+While the details have not been hammered out yet ([UCG #412](https://github.com/rust-lang/unsafe-code-guidelines/issues/412) and related issues), generally a reference type (`&T`) should be considered valid if the underlying pointer is dereferenceable (points to valid memory).
+
+A special case of this is zero-sized types, which are allowed to point to "dangling" memory as long as it is not memory that has been _deallocated_. Furthermore, pointers to zero sized types constructed from integer _literals_ are always valid, [see the `std::ptr` docs](https://doc.rust-lang.org/std/ptr/index.html#safety).
+
+`Vec<T>` is a bit of a special case where is allowed to refer to invalid-but-aligned-and-non-null memory when it is empty.
+
+There are a lot of other reasons that a pointer type may not be valid, but these are the ones having to do with the bit pattern and memory allocation. We'll be covering the others in more depth in other chapters (@@note: where?).
 
 #### "shallow" vs "deep" validity
 
