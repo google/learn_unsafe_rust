@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -31,15 +31,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -61,19 +63,16 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
             var sidebar = null;
             var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
@@ -83,43 +82,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="undefined_behavior.html"><strong aria-hidden="true">2.</strong> Undefined behavior</a></li><li class="chapter-item expanded "><a href="core_unsafety.html"><strong aria-hidden="true">3.</strong> Core unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="core_unsafety/dangling_and_unaligned_pointers.html"><strong aria-hidden="true">3.1.</strong> Dangling and unaligned pointers</a></li><li class="chapter-item expanded "><a href="core_unsafety/invalid_values.html"><strong aria-hidden="true">3.2.</strong> Invalid values</a></li><li class="chapter-item expanded "><a href="core_unsafety/data_races.html"><strong aria-hidden="true">3.3.</strong> Data races</a></li><li class="chapter-item expanded "><a href="core_unsafety/intrinsics.html"><strong aria-hidden="true">3.4.</strong> Intrinsics</a></li><li class="chapter-item expanded "><a href="core_unsafety/abi_and_ffi.html"><strong aria-hidden="true">3.5.</strong> ABI and FFI</a></li><li class="chapter-item expanded "><a href="core_unsafety/platform_features.html"><strong aria-hidden="true">3.6.</strong> Platform features</a></li><li class="chapter-item expanded "><a href="core_unsafety/inline_assembly.html"><strong aria-hidden="true">3.7.</strong> Inline assembly</a></li></ol></li><li class="chapter-item expanded "><a href="advanced_unsafety.html"><strong aria-hidden="true">4.</strong> Advanced unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced_unsafety/uninitialized.html"><strong aria-hidden="true">4.1.</strong> Uninitialized memory</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pointer_aliasing.html"><strong aria-hidden="true">4.2.</strong> Pointer aliasing</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/immutable_data.html"><strong aria-hidden="true">4.3.</strong> Immutable data</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/atomic_ordering.html"><strong aria-hidden="true">4.4.</strong> Atomic ordering</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pinning.html"><strong aria-hidden="true">4.5.</strong> Pinning</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/variance.html"><strong aria-hidden="true">4.6.</strong> Variance</a></li></ol></li><li class="chapter-item expanded "><a href="expert_unsafety.html"><strong aria-hidden="true">5.</strong> Expert unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="expert_unsafety/stacked_borrows.html"><strong aria-hidden="true">5.1.</strong> Stacked borrows</a></li><li class="chapter-item expanded "><a href="expert_unsafety/pointer_provenance.html"><strong aria-hidden="true">5.2.</strong> Pointer provenance</a></li></ol></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
-
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -173,7 +154,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>Welcome to &quot;Learn unsafe Rust&quot;, a compassionate and comprehensive resource for
+<p>Welcome to "Learn unsafe Rust", a compassionate and comprehensive resource for
 learning unsafe Rust.</p>
 <p>The materials in this book are broken down into three major volumes:</p>
 <ol>
@@ -189,18 +170,18 @@ chapter.</p>
 <p><em>“People shouldn't call for demons unless they really mean what they say.”</em></p>
 <p>— <em>C.S. Lewis, The Last Battle</em></p>
 </blockquote>
-<p>&quot;Undefined behavior&quot; is a bit of a strange notion. On one hand, the reference
+<p>"Undefined behavior" is a bit of a strange notion. On one hand, the reference
 <a href="https://doc.rust-lang.org/reference/behavior-considered-undefined.html">clearly defines</a> some (but not all) causes of undefined behavior.
 This list includes some causes that are generally well-known: dereferencing a
 null pointer, causing a data race, executing incorrect inline assembly. These
 all have a direct translation for real, common machines and so it is common to
-misunderstand &quot;undefined behavior&quot; to be &quot;platform-specific behavior&quot;. Maybe on
+misunderstand "undefined behavior" to be "platform-specific behavior". Maybe on
 x86 it will continue on, perhaps on ARM it will cause a fault. While this can be
 true, undefined behavior is usually more nuanced because of:</p>
 <h2 id="abstract-machines"><a class="header" href="#abstract-machines">Abstract machines</a></h2>
 <p>High-level programming languages allow programming for a wide variety of targets
 by abstracting away the specific properties of each one, and targeting a single
-&quot;abstract machine&quot;. C and C++ have their own &quot;abstract machines&quot;, and so does
+"abstract machine". C and C++ have their own "abstract machines", and so does
 Rust. This means that the semantics and rules of an abstract machine depend
 heavily on the language that it's for.</p>
 <p>When we write Rust code, we're writing code for this abstract machine. We're not
@@ -211,7 +192,7 @@ perspective, it's easier to see that undefined behavior is platform-independent.
 <h2 id="rusts-abstract-machine"><a class="header" href="#rusts-abstract-machine">Rust's abstract machine</a></h2>
 <p>Rust's abstract machine has not been rigorously defined, and it may never be.
 Efforts to rigorously define Rust's abstract machine are usually colloquially
-called &quot;standardizing Rust&quot;. You may even have heard of some of these efforts,
+called "standardizing Rust". You may even have heard of some of these efforts,
 like the <a href="https://ferrous-systems.com/blog/the-ferrocene-language-specification-is-here/">Ferrocene Language Specification</a>. It's important to note
 that these standards are for <em>some language arbitrarily close to Rust</em>; they're
 not standards for the official Rust language.</p>
@@ -225,13 +206,13 @@ officially adopted as rules yet. Some of these are covered in the
 <a href="./expert_unsafety.html">Expert unsafety</a> volume.</p>
 <h2 id="triggering-undefined-behavior"><a class="header" href="#triggering-undefined-behavior">Triggering undefined behavior</a></h2>
 <p>Undefined behavior in Rust is always triggered by some condition being met, and
-usually this condition is just &quot;some code getting executed in a particular way&quot;
-or &quot;some code violating an invariant upheld by the compiler&quot;. Because of this,
-it's often tempting to think of undefined behavior as telling your program &quot;if
-you get here, do whatever you want&quot;. However, undefined behavior is a purely
-compile-time concept. It's not telling your program &quot;do whatever you want&quot;, it's
-telling the compiler &quot;assume this can never happen&quot;. The compiler may not have a
-better response than saying &quot;if you get here, panic&quot;. Or, it may be able to use
+usually this condition is just "some code getting executed in a particular way"
+or "some code violating an invariant upheld by the compiler". Because of this,
+it's often tempting to think of undefined behavior as telling your program "if
+you get here, do whatever you want". However, undefined behavior is a purely
+compile-time concept. It's not telling your program "do whatever you want", it's
+telling the compiler "assume this can never happen". The compiler may not have a
+better response than saying "if you get here, panic". Or, it may be able to use
 that promise to better optimize your code.</p>
 <p>As an example, consider this Rust code:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -256,7 +237,7 @@ unsafe fn char_to_int(c: char) -&gt; u8 {
 <span class="boring">}</span></code></pre></pre>
 <p>This converts a char <code>'0'..'9'</code> to its corresponding integer value. In the last
 arm of the match, we call <code>unreachable_unchecked()</code>, which is a compiler hint
-that says &quot;it would be undefined behavior to reach here&quot;. Because we promised
+that says "it would be undefined behavior to reach here". Because we promised
 the compiler that <code>c</code> won't be any value other than <code>0..9</code>, it could optimize
 this function into something like:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -296,7 +277,7 @@ optimization!</p>
 <p>This version doesn't return anything, it panics! In fact, the compiler would be
 allowed to put <em>anything</em> in where the <code>panic!()</code> is located; the resulting
 function would be just as correct and optimal as this one.</p>
-<p>This strikes at the core of what &quot;undefined behavior&quot; is. The Rust compiler
+<p>This strikes at the core of what "undefined behavior" is. The Rust compiler
 transforms code based on a set of assumptions that always hold. If you break one
 of these assumptions, then the behavior of your program is undefined because
 it's impossible to know what transforms the compiler is doing based on them.</p>
@@ -319,7 +300,7 @@ that we use which is unsound.</p>
 code. It's your job as the abstraction designer to make sure that no possible
 arrangement of safe code can cause undefined behavior. That's a lot to consider!</p>
 <h3 id="unsafe-code-must-accurately-document-its-safety-conditions-or-its-unsound"><a class="header" href="#unsafe-code-must-accurately-document-its-safety-conditions-or-its-unsound">Unsafe code must accurately document its safety conditions, or it's unsound</a></h3>
-<p>The &quot;safety conditions&quot; for unsafe traits and functions are just the conditions
+<p>The "safety conditions" for unsafe traits and functions are just the conditions
 under which it does not trigger undefined behavior. These conditions aren't
 checked by the compiler, they're checked by the people who write the code
 itself. Therefore, unsafe blocks must be manually checked to verify that the
@@ -328,17 +309,17 @@ Any unsafe code that can trigger undefined behavior <em>even when its safety
 conditions are upheld</em> is unsound.</p>
 <h2 id="common-misconceptions"><a class="header" href="#common-misconceptions">Common misconceptions</a></h2>
 <p>There are a couple misconceptions about UB that often muddy the water when talking about it.</p>
-<h3 id="if-it-works-its-sound"><a class="header" href="#if-it-works-its-sound">&quot;If it works, it's sound&quot;</a></h3>
+<h3 id="if-it-works-its-sound"><a class="header" href="#if-it-works-its-sound">"If it works, it's sound"</a></h3>
 <p>Undefined Behavior may be present even if the compiler does end up compiling the
 code according to the programmer's intent. A future version of the compiler may
 behave differently, or future changes to an innocuous portion of the code may
 cause it to fall to the other side of an invisible threshold. Technically it
 may even compile differently but only on Tuesdays, though that type of
 nondeterminism is generally rare.</p>
-<h3 id="ub-is-about-what-the-optimizer-is-allowed-to-do"><a class="header" href="#ub-is-about-what-the-optimizer-is-allowed-to-do">&quot;UB is about what the optimizer is allowed to do&quot;</a></h3>
+<h3 id="ub-is-about-what-the-optimizer-is-allowed-to-do"><a class="header" href="#ub-is-about-what-the-optimizer-is-allowed-to-do">"UB is about what the optimizer is allowed to do"</a></h3>
 <p>This is to <em>some extent</em> true but the actual situation is far more nuanced.</p>
-<p>It's common for people to think about UB in terms of what an optimizer &quot;is and
-isn't allowed to do&quot;, and in terms of optimizations they know can occur. For
+<p>It's common for people to think about UB in terms of what an optimizer "is and
+isn't allowed to do", and in terms of optimizations they know can occur. For
 example, it's pretty straightforward to see that sneakily writing to memory
 that you're not supposed to can cause undefined behavior when the optimizer
 decides to elide a memory read that occurs after your illicit write.</p>
@@ -358,7 +339,6 @@ break code exhibiting undefined behavior, however it is crucial to learn the
 rule behind the breakage rather than just the nature of the optimization.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="core-unsafety"><a class="header" href="#core-unsafety">Core unsafety</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="dangling-and-unaligned-pointers"><a class="header" href="#dangling-and-unaligned-pointers">Dangling and unaligned pointers</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="invalid-values"><a class="header" href="#invalid-values">Invalid values</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="data-races"><a class="header" href="#data-races">Data races</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="intrinsics"><a class="header" href="#intrinsics">Intrinsics</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="abi-and-ffi"><a class="header" href="#abi-and-ffi">ABI and FFI</a></h1>
@@ -367,14 +347,14 @@ rule behind the breakage rather than just the nature of the optimization.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-unsafety"><a class="header" href="#advanced-unsafety">Advanced unsafety</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="uninitialized-memory"><a class="header" href="#uninitialized-memory">Uninitialized memory</a></h1>
 <blockquote>
-<p><em>&quot;I'm Nobody! Who are you? Are you — Nobody — too?&quot;</em></p>
+<p><em>"I'm Nobody! Who are you? Are you — Nobody — too?"</em></p>
 <p>— <em>Emily Dickinson</em></p>
 </blockquote>
 <p>While we have covered <a href="advanced_unsafety/../core_unsafety/invalid_values.html">invalid values</a>, there's another thing that is a kind of invalid value, but has nothing to do with actual bit patterns: Uninitialized memory.</p>
 <h2 id="safely-working-with-uninitialized-memory"><a class="header" href="#safely-working-with-uninitialized-memory">Safely working with uninitialized memory</a></h2>
 <p>The basic rule of thumb is: never refer to uninitialized memory with anything other than a raw pointer or something wrapped in <a href="https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html"><code>MaybeUninit&lt;T&gt;</code></a>. Having a stack value or temporary that is uninitialized and has a type that is not <code>MaybeUninit&lt;T&gt;</code>  (or an array of <code>MaybeUninit</code>s) is always undefined behavior.</p>
-<p>A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as &quot;byte value #257&quot;), but can be introduced in the abstract machine in various ways, and makes <em>most</em> values invalid.</p>
-<p>Any attempt to read uninitialized bytes as a &quot;type that cares about initializedness&quot; will be UB, and the presence of this byte in non-padding locations is considered UB for most types. Most types care about initialized-ness; and the list of types that doesn't derives from treating initializedness as a property of the byte:</p>
+<p>A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes <em>most</em> values invalid.</p>
+<p>Any attempt to read uninitialized bytes as a "type that cares about initializedness" will be UB, and the presence of this byte in non-padding locations is considered UB for most types. Most types care about initialized-ness; and the list of types that doesn't derives from treating initializedness as a property of the byte:</p>
 <ul>
 <li>Zero-sized types do not care about initializedness, since they do not have bytes</li>
 <li>Unions do not care about initializedness if they have a variant that does not care about initialized-ness</li>
@@ -394,8 +374,8 @@ rule behind the breakage rather than just the nature of the optimization.</p>
 <p><code>mem::uninitialized()</code> is exactly equivalent to <code>MaybeUninit::uninit().assume_init()</code>, but it is deprecated since <code>MaybeUninit</code> actually provides the flexibility needed to deal with uninitialized memory safely.</p>
 <h3 id="padding"><a class="header" href="#padding">Padding</a></h3>
 <p>Padding bytes in structs and enums are <a href="https://github.com/rust-lang/unsafe-code-guidelines/blob/master/reference/src/glossary.md#padding">usually but not always uninitialized</a>. This means that treating a struct as a bag of bytes (by, say, treating <code>&amp;Struct</code> as <code>&amp;[u8; size_of::&lt;Struct&gt;()]</code> and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized <code>u8</code>s.</p>
-<p>The &quot;usually but not always&quot; caveat can be usefully framed as &quot;padding bytes are uninitialized unless proven otherwise&quot;. Padding is a property of the <em>access</em> (i.e., the <em>type</em>), not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type<sup class="footnote-reference"><a href="#1">1</a></sup>, and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.</p>
-<p>For example, treating an initialized byte buffer as an <code>&amp;Struct</code> and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an <code>&amp;mut Struct</code> and then writing a new <code>Struct</code> to it will lead to those bytes becoming uninitialized since the <code>Struct</code> copy will &quot;copy&quot; the uninitialized padding bytes. Similarly, using <code>mem::transmute()</code> (or <code>mem::zeroed()</code>) to transmute a byte buffer to a <code>Struct</code> will uninitialize the padding because it performs a typed copy of the <code>Struct</code>.</p>
+<p>The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of the <em>access</em> (i.e., the <em>type</em>), not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type<sup class="footnote-reference"><a href="#1">1</a></sup>, and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.</p>
+<p>For example, treating an initialized byte buffer as an <code>&amp;Struct</code> and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an <code>&amp;mut Struct</code> and then writing a new <code>Struct</code> to it will lead to those bytes becoming uninitialized since the <code>Struct</code> copy will "copy" the uninitialized padding bytes. Similarly, using <code>mem::transmute()</code> (or <code>mem::zeroed()</code>) to transmute a byte buffer to a <code>Struct</code> will uninitialize the padding because it performs a typed copy of the <code>Struct</code>.</p>
 <p>Because <a href="https://doc.rust-lang.org/stable/std/ptr/fn.copy.html"><code>ptr::copy</code></a> is an untyped copy, it can be used to copy over explicitly-initialized padding.</p>
 <p>See the discussion in [UGC #395][ugc395] for more examples.</p>
 <h3 id="unions"><a class="header" href="#unions">Unions</a></h3>
@@ -421,17 +401,17 @@ unsafe {
     let ghost = ptr::read(ptr);
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Any type of move will do this, even when you &quot;move&quot; the value into a different variable with stuff like <code>let y = x;</code>.</p>
+<p>Any type of move will do this, even when you "move" the value into a different variable with stuff like <code>let y = x;</code>.</p>
 <p>This isn't <em>quite</em> uninitialized: it's just that using after a move is straight up UB in Rust, much like reading from freed memory. In particular, unlike most pointers to uninitialized values, this dangling pointer is unsound to <em>write</em> to as well.</p>
 <p>Working with dangling pointers can often lead to similar problems as working with uninitialized values.</p>
-<p>Note that Rust does let you &quot;partially move&quot; out of fields of a struct, in such a case the whole struct is now no longer a valid value for its type, but you are still allowed to &quot;use&quot; the struct to look at other fields, and the value as a whole is no longer usable. When doing such things, make sure there are no pointers that still think the struct is whole and valid.</p>
+<p>Note that Rust does let you "partially move" out of fields of a struct, in such a case the whole struct is now no longer a valid value for its type, but you are still allowed to "use" the struct to look at other fields, and the value as a whole is no longer usable. When doing such things, make sure there are no pointers that still think the struct is whole and valid.</p>
 <h4 id="caveat-ptrdrop_in_place-manuallydropdrop-and-ptrread"><a class="header" href="#caveat-ptrdrop_in_place-manuallydropdrop-and-ptrread">Caveat: <code>ptr::drop_in_place()</code>, <code>ManuallyDrop::drop()</code>, and <code>ptr::read()</code></a></h4>
 <p><a href="https://doc.rust-lang.org/stable/std/ptr/fn.drop_in_place.html"><code>ptr::drop_in_place()</code></a> and <a href="https://doc.rust-lang.org/stable/std/mem/struct.ManuallyDrop.html#method.drop"><code>ManuallyDrop::drop()</code></a> are interesting: they both call the destructor<sup class="footnote-reference"><a href="#2">2</a></sup> on a value (or a pointed-to value in the case of <code>drop_in_place</code>). From the perspective of safety they are identical; they are just different APIs for dealing with manually calling destructors.</p>
 <p><a href="https://doc.rust-lang.org/stable/std/mem/struct.ManuallyDrop.html#method.drop"><code>ManuallyDrop::drop()</code></a> makes the following claim:</p>
 <blockquote>
 <p>Other than changes made by the destructor itself, the memory is left unchanged, and so as far as the compiler is concerned still holds a bit-pattern which is valid for the type T.</p>
 </blockquote>
-<p>In other words, Rust does <em>not</em> consider these operations to do the same invalidation as a regular &quot;move from&quot; operation, even though they may have a similar feel. They do not create dangling pointers, and they do not themselves overwrite the memory with an uninitialized value.</p>
+<p>In other words, Rust does <em>not</em> consider these operations to do the same invalidation as a regular "move from" operation, even though they may have a similar feel. They do not create dangling pointers, and they do not themselves overwrite the memory with an uninitialized value.</p>
 <p>There is an <a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/394">open issue</a> about whether <code>Drop::drop()</code> is itself allowed to produce uninitialized or invalid memory, so it may not be possible to rely on this in a generic context.</p>
 <p><a href="https://doc.rust-lang.org/stable/std/ptr/fn.read.html"><code>ptr::read()</code></a> similarly claims that it leaves the source memory untouched, which means that it is still a valid value. Of course, <a href="https://doc.rust-lang.org/stable/std/ptr/fn.read.html"><code>ptr::read()</code></a> on a pointer pointing to uninitialized memory will still create an uninitialized value.</p>
 <p>For all of these APIs, actually <em>using</em> the dropped or read-from memory may still be fraught depending on the invariants of the value; it's quite easy to cause a double-free by materializing an owned value from the original data after it has already been read-from or dropped.</p>
@@ -448,7 +428,7 @@ unsafe {
 let ptr: *mut String = val.as_mut_ptr();
 unsafe {
     // UB!
-    *ptr = String::from(&quot;hello world&quot;);
+    *ptr = String::from("hello world");
 }
 <span class="boring">}</span></code></pre></pre>
 <p>This is UB because writing to raw pointers, under the hood, still calls destructors on the old value, the same way a write to an <code>&amp;mut T</code> does. This is usually quite convenient, but here the old value is uninitialized, and calling a destructor on it is undefined.</p>
@@ -457,8 +437,95 @@ unsafe {
 <p>This is largely similar to the situation for <a href="advanced_unsafety/../core_unsafety/invalid_values.html">invalid values</a>: The compiler is allowed to assume memory is never uninitialized, and since uninitialized memory is a kind of invalid value, all of the failure modes of <a href="advanced_unsafety/../core_unsafety/invalid_values.html">invalid values</a> are possible.</p>
 <p>Often when reading from uninitialized memory you'll see reads to the same, unchanged, memory producing different values.</p>
 <p>This is not an exhaustive list: ultimately, having an uninitialized value is UB and it remains illegal even if there are no optimizations that will break.</p>
-<p><sup class="footnote-reference"><a href="#1">1</a></sup>: Be sure to use <code>&amp;[MaybeUninit&lt;u8&gt;]</code> if treating a type with uninitialized padding as manipulatable memory!
-<sup class="footnote-reference"><a href="#2">2</a></sup>: The &quot;destructor&quot; is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as &quot;drop glue&quot;). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the destructor is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>Be sure to use <code>&amp;[MaybeUninit&lt;u8&gt;]</code> if treating a type with uninitialized padding as manipulatable memory!</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>The "destructor" is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the destructor is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="invalid-values"><a class="header" href="#invalid-values">Invalid values</a></h1>
+<blockquote>
+<p><em>“If you tell the truth, you don't have to remember anything.”</em>_
+— <em>Mark Twain</em></p>
+</blockquote>
+<p>Values of a particular type in Rust may never have an "invalid" bit pattern for that type. This is true even if that value is never read from afterwards, or if that value simply exists behind an unread reference. From <a href="https://doc.rust-lang.org/reference/behavior-considered-undefined.html">the reference</a>:</p>
+<blockquote>
+<p>"Producing" a value happens any time a value is assigned to or read from a place, passed to a function/primitive operation or returned from a function/primitive operation.</p>
+</blockquote>
+<p>A lot of basic types <em>don't</em> have any rules about invalid values. For example, all bit patterns of the integer types (and arrays of the integer types) are valid. But most other types have some concept of validity.</p>
+<h2 id="types-of-invalid-values"><a class="header" href="#types-of-invalid-values">Types of invalid values</a></h2>
+<h3 id="uninitialized-memory-1"><a class="header" href="#uninitialized-memory-1">Uninitialized memory</a></h3>
+<p>Values of <em>any</em> type can be "uninitialized", which is considered instantly UB even for types like integers. We discuss this further in <a href="advanced_unsafety/../advanced_unsafe/uninitialized.html">the chapter on uninitialized memory</a>. For now this chapter will largely cover cases where a type may have an invalid <em>bit pattern</em>, rather than other cases where it may be invalid due to e.g. not having an initialized bit representation at all.</p>
+<h3 id="primitive-types-with-invalid-values"><a class="header" href="#primitive-types-with-invalid-values">Primitive types with invalid values</a></h3>
+<p><code>bool</code>s that have bit patterns other than those for <code>true</code> and <code>false</code> are invalid. The same goes for <code>char</code>s representing byte patterns that are considered invalid in UTF-32 (anything that is either a surrogate character, or greater than <code>char::MAX</code>).</p>
+<h3 id="pointers-with-invalid-values"><a class="header" href="#pointers-with-invalid-values">Pointers with invalid values</a></h3>
+<p><code>&amp;T</code> and <code>&amp;mut T</code> may not be null, nor may they be <a href="advanced_unsafety/../core_unsafety/dangling_and_unaligned_pointers.html">unaligned</a> for values of type <code>T</code>.</p>
+<p><code>fn</code> pointers and the metadata part of <code>dyn Trait</code> may not be null either.</p>
+<p>Most smart pointer types like <code>Box&lt;T&gt;</code> and <code>Rc&lt;T&gt;</code> are invalid when null. Library types may achieve the same behavior using the <a href="https://doc.rust-lang.org/stable/std/ptr/struct.NonNull.html"><code>NonNull&lt;T&gt;</code></a> pointer type.</p>
+<p>It's also currently invalid for <code>Vec&lt;T&gt;</code> to have a null pointer for its buffer! <code>Vec&lt;T&gt;</code> uses <a href="https://doc.rust-lang.org/stable/std/ptr/struct.NonNull.html"><code>NonNull&lt;T&gt;</code></a> internally, and empty vectors use a pointer value equal to the alignment of <code>T</code>.</p>
+<p>While the details have not been hammered out yet (<a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/412">UCG #412</a> and related issues), generally a reference type (<code>&amp;T</code>) should be considered valid if the underlying pointer is dereferenceable (points to valid memory).</p>
+<p>A special case of this is zero-sized types, which are allowed to point to "dangling" memory as long as it is not memory that has been <em>deallocated</em>. Furthermore, pointers to zero sized types constructed from integer <em>literals</em> are always valid, <a href="https://doc.rust-lang.org/std/ptr/index.html#safety">see the <code>std::ptr</code> docs</a>.</p>
+<p><code>Vec&lt;T&gt;</code> is a bit of a special case where is allowed to refer to invalid-but-aligned-and-non-null memory when it is empty.</p>
+<p>There are a lot of other reasons that a pointer type may not be valid, but these are the ones having to do with the bit pattern and memory allocation. We'll be covering the others in more depth in other chapters (@@note: where?).</p>
+<h4 id="shallow-vs-deep-validity"><a class="header" href="#shallow-vs-deep-validity">"shallow" vs "deep" validity</a></h4>
+<p>An open question in Rust's model is whether references and reference-like types have "shallow" validity (roughly, the rules above), or "deep" validity (where a reference is valid only when the pointed-to data is valid, and that applies transitively). This issue is tracked upstream as <a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/77">UGC #77</a>. The current discussion seems to skew towards shallow validity as opposed to deep validity, but this may change.</p>
+<p>For the purposes of <em>writing</em> unsafe code, it is convenient to imagine the boundary as being such that <code>&amp;T</code>/<code>&amp;mut T</code> references should never point to memory containing invalid values of type <code>T</code>. However, when auditing existing unsafe code it may be okay to allow scenarios that assume only shallow validity is required, depending on your risk appetite.</p>
+<h3 id="enums-with-invalid-values"><a class="header" href="#enums-with-invalid-values">Enums with invalid values</a></h3>
+<p>Any bit pattern not covered by a variant of an enum is also invalid. For example, with the following enum:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum Colors {
+    Red = 1,
+    Orange = 2,
+    Yellow = 3,
+    Green = 4,
+    Blue = 5,
+    Indigo = 6,
+    Violet = 7,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>a bit pattern of <code>8</code> or <code>0</code> (assuming that it gets represented as the explicit discriminant integers) is undefined behavior.</p>
+<p>Or in this enum:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum Stuff {
+    Char(char),
+    Number(u32),
+}
+<span class="boring">}</span></code></pre></pre>
+<p>setting the discriminant bit to something that is not the discriminant of <code>Char</code> or <code>Number</code> is invalid. Similarly, setting the discriminant bit to that for <code>Char</code> but having the value be invalid for a <code>char</code> is also invalid.</p>
+<h3 id="str"><a class="header" href="#str"><code>str</code></a></h3>
+<p>The string slice type <code>str</code> does not actually have any validity constraints: Despite being only for UTF-8 encoded strings, it is valid for <code>str</code>s to be in any bit pattern, provided you do not call any methods on the string that are not about directly accessing the memory behind it.</p>
+<p>Basically, the UTF-8 validity of <code>str</code> is an implicit safety requirement for most of its methods, however it is fine to <em>hold on to</em> an <code>&amp;str</code> that points to random bytes. This is a difference between things being "insta-UB" and "UB on use": invalid value UB is typically "insta UB" (it's UB even if you don't <em>do</em> anything with the invalid value), but here you're allowed to do this as long as you don't use the data in certain ways.</p>
+<p>This is something that can be relied on when doing things like manipulating or constructing <code>str</code>s byte-by-byte, where there may be intermediate invalid states.</p>
+<p>Of course, reference types like <code>&amp;str</code> must still satisfy all of the rules about reference validity (being non-null, etc).</p>
+<h3 id="invalid-values-for-general-library-types"><a class="header" href="#invalid-values-for-general-library-types">Invalid values for general library types</a></h3>
+<p>In general, types may have various invalid values based on their internal representation (which may not be stable!).
+In addition to <a href="https://doc.rust-lang.org/stable/std/ptr/struct.NonNull.html"><code>NonNull&lt;T&gt;</code></a>, the Rust standard library provides <a href="https://doc.rust-lang.org/stable/std/num/struct.NonZeroUsize.html"><code>NonZeroUsize</code></a> and a bunch of other similar <code>NonZero</code> integer types that work as its integer counterparts, and libraries may use these internally.</p>
+<p>Note that Rust's default representation for types is not stable! What might be a valid bit pattern one day may become invalid later, unless you're only relying on things that are known to be invariant. Converting a type to its bits, sending it over the network, and converting it back is extremely fragile, and will break if the two sides are on different platforms or even Rust versions.</p>
+<p>As a library user you may not assume anything about the representation of a library type unless it is explicitly documented as such, or if it has a public representation that is known to be stable (for example a public <code>#[repr(C)]</code> enum)</p>
+<h2 id="when-you-might-end-up-making-an-invalid-value"><a class="header" href="#when-you-might-end-up-making-an-invalid-value">When you might end up making an invalid value</a></h2>
+<p>Invalid values have a chance to crop up when you're reinterpreting a chunk of memory as a value of a different type. This can happen when calling <a href="https://doc.rust-lang.org/stable/std/mem/fn.transmute.html"><code>mem::transmute()</code></a>, <a href="https://doc.rust-lang.org/stable/std/mem/fn.transmute_copy.html"><code>mem::transmute_copy()</code></a>, or <a href="https://doc.rust-lang.org/stable/std/mem/fn.zeroed.html"><code>mem::zeroed()</code></a>, when casting a reference to a region of memory into one of a different type, or when accessing the wrong variant of a <code>union</code>. The value need not be on the stack to be considered invalid: if you gin up an <code>&amp;bool</code> that points to a bit pattern that is not a valid <code>bool</code>, that can instantly be UB (in a "deep validity" world) even if you don't read from the reference.</p>
+<p>Note that since <a href="advanced_unsafety/../advanced_unsafe/uninitialized.html">uninitialized memory</a> is a type of invalid value, any way to produce uninitialized memory (including <a href="https://doc.rust-lang.org/stable/std/mem/fn.uninitialized.html"><code>mem::uninitialized()</code></a>) is also a way of producing invalid values.</p>
+<p>Invalid values can also be created when receiving values over FFI where either the signature of the function is incorrect (e.g. saying an FFI function accepts <code>bool</code> when the other side thinks it accepts a <code>u8</code>), or where there are differences in notions of validity across languages.</p>
+<p>A subtle case of this comes up occasionally in FFI code due to differences in expectations between how enums are used in Rust and C.</p>
+<p>In C, it is common to use enums to represent <em>bitmasks</em>, doing something like this:</p>
+<pre><code class="language-c">typedef enum {
+    Active = 0x01;
+    Visible = 0x02;
+    Updating = 0x03;
+    Focused = 0x04;
+} NodeStatus;
+</code></pre>
+<p>where the value make take states like <code>Active | Focused | Visible</code>. These combined values, as well as the "no flags set" value <code>0</code> are invalid in Rust. If this type is represented as an enum in Rust (<a href="https://doc.rust-lang.org/reference/type-layout.html#reprc-field-less-enums">even if it is <code>#[repr(C)]</code></a>!), it will be UB to accept values of this type over FFI from C. Generally in such cases it is recommended to use an integer type instead, and represent the mask values as constants.</p>
+<h2 id="signs-an-invalid-value-was-involved"><a class="header" href="#signs-an-invalid-value-was-involved">Signs an invalid value was involved</a></h2>
+<p>The compiler is allowed to assume that values are never invalid; and it may use invalid states to signal other things, or pack types into smaller spaces.</p>
+<p>For example, the type <code>Option&lt;Box&lt;T&gt;&gt;</code> will use the fact that the reference cannot be null to fit the entire type into the the same space <code>Box&lt;T&gt;</code> takes up, with the null pointer state representing <code>None</code>.</p>
+<p>This can go even further with stuff like <code>Option&lt;Option&lt;Option&lt;bool&gt;&gt;&gt;</code> fitting into a single byte, up to and including the type with 254 <code>Option</code>s surrounding one <code>bool</code>. This general class of optimization is known as a "niche optimization", with bits representing invalid values being called "niches".</p>
+<p>In such scenarios, invalid values may lead to values being interpreted as a different value, for example an <code>Option&lt;NodeStatus&gt;</code> using the enum from above would be interpreted as <code>None</code> if <code>NodeStatus</code> were represented as a Rust enum and an "empty status" value was received over C.</p>
+<p>Furthermore, invalid values will break <code>match</code> statements, usually (but not necessarily) leading to an abort.</p>
+<p>Debuggers also tend to behave strangely with invalid values, displaying incorrect values, or even having the value change from read to read.</p>
+<p>This is not an exhaustive list: ultimately, having an invalid value is UB and it remains illegal even if there are no optimizations that will break.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pointer-aliasing"><a class="header" href="#pointer-aliasing">Pointer aliasing</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="immutable-data"><a class="header" href="#immutable-data">Immutable data</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="atomic-ordering"><a class="header" href="#atomic-ordering">Atomic ordering</a></h1>

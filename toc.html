@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- sidebar iframe generated using mdBook
+
+        This is a frame, and not included directly in the page, to control the total size of the
+        book. The TOC contains an entry for each page, so if each page includes a copy of the TOC,
+        the total size of the page becomes O(n**2).
+
+        The frame is only used as a fallback when JS is turned off. When it's on, the sidebar is
+        instead added to the main page by `toc.js` instead. The JavaScript mode is better
+        because, when running in a `file:///` URL, the iframed page would not be Same-Origin as
+        the rest of the page, so the sidebar and the main page theme would fall out of sync.
+        -->
+        <meta charset="UTF-8">
+        <meta name="robots" content="noindex">
+        <!-- Custom HTML head -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Custom theme stylesheets -->
+    </head>
+    <body class="sidebar-iframe-inner">
+        <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html" target="_parent"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="undefined_behavior.html" target="_parent"><strong aria-hidden="true">2.</strong> Undefined behavior</a></li><li class="chapter-item expanded "><a href="core_unsafety.html" target="_parent"><strong aria-hidden="true">3.</strong> Core unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="core_unsafety/dangling_and_unaligned_pointers.html" target="_parent"><strong aria-hidden="true">3.1.</strong> Dangling and unaligned pointers</a></li><li class="chapter-item expanded "><a href="core_unsafety/data_races.html" target="_parent"><strong aria-hidden="true">3.2.</strong> Data races</a></li><li class="chapter-item expanded "><a href="core_unsafety/intrinsics.html" target="_parent"><strong aria-hidden="true">3.3.</strong> Intrinsics</a></li><li class="chapter-item expanded "><a href="core_unsafety/abi_and_ffi.html" target="_parent"><strong aria-hidden="true">3.4.</strong> ABI and FFI</a></li><li class="chapter-item expanded "><a href="core_unsafety/platform_features.html" target="_parent"><strong aria-hidden="true">3.5.</strong> Platform features</a></li><li class="chapter-item expanded "><a href="core_unsafety/inline_assembly.html" target="_parent"><strong aria-hidden="true">3.6.</strong> Inline assembly</a></li></ol></li><li class="chapter-item expanded "><a href="advanced_unsafety.html" target="_parent"><strong aria-hidden="true">4.</strong> Advanced unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced_unsafety/uninitialized.html" target="_parent"><strong aria-hidden="true">4.1.</strong> Uninitialized memory</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/invalid_values.html" target="_parent"><strong aria-hidden="true">4.2.</strong> Invalid values</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pointer_aliasing.html" target="_parent"><strong aria-hidden="true">4.3.</strong> Pointer aliasing</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/immutable_data.html" target="_parent"><strong aria-hidden="true">4.4.</strong> Immutable data</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/atomic_ordering.html" target="_parent"><strong aria-hidden="true">4.5.</strong> Atomic ordering</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pinning.html" target="_parent"><strong aria-hidden="true">4.6.</strong> Pinning</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/variance.html" target="_parent"><strong aria-hidden="true">4.7.</strong> Variance</a></li></ol></li><li class="chapter-item expanded "><a href="expert_unsafety.html" target="_parent"><strong aria-hidden="true">5.</strong> Expert unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="expert_unsafety/stacked_borrows.html" target="_parent"><strong aria-hidden="true">5.1.</strong> Stacked borrows</a></li><li class="chapter-item expanded "><a href="expert_unsafety/pointer_provenance.html" target="_parent"><strong aria-hidden="true">5.2.</strong> Pointer provenance</a></li></ol></li></ol>
+    </body>
+</html>

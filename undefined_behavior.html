@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -30,15 +30,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -60,19 +62,16 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
             var sidebar = null;
             var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
@@ -82,43 +81,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="undefined_behavior.html" class="active"><strong aria-hidden="true">2.</strong> Undefined behavior</a></li><li class="chapter-item expanded "><a href="core_unsafety.html"><strong aria-hidden="true">3.</strong> Core unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="core_unsafety/dangling_and_unaligned_pointers.html"><strong aria-hidden="true">3.1.</strong> Dangling and unaligned pointers</a></li><li class="chapter-item expanded "><a href="core_unsafety/invalid_values.html"><strong aria-hidden="true">3.2.</strong> Invalid values</a></li><li class="chapter-item expanded "><a href="core_unsafety/data_races.html"><strong aria-hidden="true">3.3.</strong> Data races</a></li><li class="chapter-item expanded "><a href="core_unsafety/intrinsics.html"><strong aria-hidden="true">3.4.</strong> Intrinsics</a></li><li class="chapter-item expanded "><a href="core_unsafety/abi_and_ffi.html"><strong aria-hidden="true">3.5.</strong> ABI and FFI</a></li><li class="chapter-item expanded "><a href="core_unsafety/platform_features.html"><strong aria-hidden="true">3.6.</strong> Platform features</a></li><li class="chapter-item expanded "><a href="core_unsafety/inline_assembly.html"><strong aria-hidden="true">3.7.</strong> Inline assembly</a></li></ol></li><li class="chapter-item expanded "><a href="advanced_unsafety.html"><strong aria-hidden="true">4.</strong> Advanced unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced_unsafety/uninitialized.html"><strong aria-hidden="true">4.1.</strong> Uninitialized memory</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pointer_aliasing.html"><strong aria-hidden="true">4.2.</strong> Pointer aliasing</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/immutable_data.html"><strong aria-hidden="true">4.3.</strong> Immutable data</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/atomic_ordering.html"><strong aria-hidden="true">4.4.</strong> Atomic ordering</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/pinning.html"><strong aria-hidden="true">4.5.</strong> Pinning</a></li><li class="chapter-item expanded "><a href="advanced_unsafety/variance.html"><strong aria-hidden="true">4.6.</strong> Variance</a></li></ol></li><li class="chapter-item expanded "><a href="expert_unsafety.html"><strong aria-hidden="true">5.</strong> Expert unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="expert_unsafety/stacked_borrows.html"><strong aria-hidden="true">5.1.</strong> Stacked borrows</a></li><li class="chapter-item expanded "><a href="expert_unsafety/pointer_provenance.html"><strong aria-hidden="true">5.2.</strong> Pointer provenance</a></li></ol></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
-
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -176,18 +157,18 @@
 <p><em>“People shouldn't call for demons unless they really mean what they say.”</em></p>
 <p>— <em>C.S. Lewis, The Last Battle</em></p>
 </blockquote>
-<p>&quot;Undefined behavior&quot; is a bit of a strange notion. On one hand, the reference
+<p>"Undefined behavior" is a bit of a strange notion. On one hand, the reference
 <a href="https://doc.rust-lang.org/reference/behavior-considered-undefined.html">clearly defines</a> some (but not all) causes of undefined behavior.
 This list includes some causes that are generally well-known: dereferencing a
 null pointer, causing a data race, executing incorrect inline assembly. These
 all have a direct translation for real, common machines and so it is common to
-misunderstand &quot;undefined behavior&quot; to be &quot;platform-specific behavior&quot;. Maybe on
+misunderstand "undefined behavior" to be "platform-specific behavior". Maybe on
 x86 it will continue on, perhaps on ARM it will cause a fault. While this can be
 true, undefined behavior is usually more nuanced because of:</p>
 <h2 id="abstract-machines"><a class="header" href="#abstract-machines">Abstract machines</a></h2>
 <p>High-level programming languages allow programming for a wide variety of targets
 by abstracting away the specific properties of each one, and targeting a single
-&quot;abstract machine&quot;. C and C++ have their own &quot;abstract machines&quot;, and so does
+"abstract machine". C and C++ have their own "abstract machines", and so does
 Rust. This means that the semantics and rules of an abstract machine depend
 heavily on the language that it's for.</p>
 <p>When we write Rust code, we're writing code for this abstract machine. We're not
@@ -198,7 +179,7 @@ perspective, it's easier to see that undefined behavior is platform-independent.
 <h2 id="rusts-abstract-machine"><a class="header" href="#rusts-abstract-machine">Rust's abstract machine</a></h2>
 <p>Rust's abstract machine has not been rigorously defined, and it may never be.
 Efforts to rigorously define Rust's abstract machine are usually colloquially
-called &quot;standardizing Rust&quot;. You may even have heard of some of these efforts,
+called "standardizing Rust". You may even have heard of some of these efforts,
 like the <a href="https://ferrous-systems.com/blog/the-ferrocene-language-specification-is-here/">Ferrocene Language Specification</a>. It's important to note
 that these standards are for <em>some language arbitrarily close to Rust</em>; they're
 not standards for the official Rust language.</p>
@@ -212,13 +193,13 @@ officially adopted as rules yet. Some of these are covered in the
 <a href="./expert_unsafety.html">Expert unsafety</a> volume.</p>
 <h2 id="triggering-undefined-behavior"><a class="header" href="#triggering-undefined-behavior">Triggering undefined behavior</a></h2>
 <p>Undefined behavior in Rust is always triggered by some condition being met, and
-usually this condition is just &quot;some code getting executed in a particular way&quot;
-or &quot;some code violating an invariant upheld by the compiler&quot;. Because of this,
-it's often tempting to think of undefined behavior as telling your program &quot;if
-you get here, do whatever you want&quot;. However, undefined behavior is a purely
-compile-time concept. It's not telling your program &quot;do whatever you want&quot;, it's
-telling the compiler &quot;assume this can never happen&quot;. The compiler may not have a
-better response than saying &quot;if you get here, panic&quot;. Or, it may be able to use
+usually this condition is just "some code getting executed in a particular way"
+or "some code violating an invariant upheld by the compiler". Because of this,
+it's often tempting to think of undefined behavior as telling your program "if
+you get here, do whatever you want". However, undefined behavior is a purely
+compile-time concept. It's not telling your program "do whatever you want", it's
+telling the compiler "assume this can never happen". The compiler may not have a
+better response than saying "if you get here, panic". Or, it may be able to use
 that promise to better optimize your code.</p>
 <p>As an example, consider this Rust code:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -243,7 +224,7 @@ unsafe fn char_to_int(c: char) -&gt; u8 {
 <span class="boring">}</span></code></pre></pre>
 <p>This converts a char <code>'0'..'9'</code> to its corresponding integer value. In the last
 arm of the match, we call <code>unreachable_unchecked()</code>, which is a compiler hint
-that says &quot;it would be undefined behavior to reach here&quot;. Because we promised
+that says "it would be undefined behavior to reach here". Because we promised
 the compiler that <code>c</code> won't be any value other than <code>0..9</code>, it could optimize
 this function into something like:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -283,7 +264,7 @@ optimization!</p>
 <p>This version doesn't return anything, it panics! In fact, the compiler would be
 allowed to put <em>anything</em> in where the <code>panic!()</code> is located; the resulting
 function would be just as correct and optimal as this one.</p>
-<p>This strikes at the core of what &quot;undefined behavior&quot; is. The Rust compiler
+<p>This strikes at the core of what "undefined behavior" is. The Rust compiler
 transforms code based on a set of assumptions that always hold. If you break one
 of these assumptions, then the behavior of your program is undefined because
 it's impossible to know what transforms the compiler is doing based on them.</p>
@@ -306,7 +287,7 @@ that we use which is unsound.</p>
 code. It's your job as the abstraction designer to make sure that no possible
 arrangement of safe code can cause undefined behavior. That's a lot to consider!</p>
 <h3 id="unsafe-code-must-accurately-document-its-safety-conditions-or-its-unsound"><a class="header" href="#unsafe-code-must-accurately-document-its-safety-conditions-or-its-unsound">Unsafe code must accurately document its safety conditions, or it's unsound</a></h3>
-<p>The &quot;safety conditions&quot; for unsafe traits and functions are just the conditions
+<p>The "safety conditions" for unsafe traits and functions are just the conditions
 under which it does not trigger undefined behavior. These conditions aren't
 checked by the compiler, they're checked by the people who write the code
 itself. Therefore, unsafe blocks must be manually checked to verify that the
@@ -315,17 +296,17 @@ Any unsafe code that can trigger undefined behavior <em>even when its safety
 conditions are upheld</em> is unsound.</p>
 <h2 id="common-misconceptions"><a class="header" href="#common-misconceptions">Common misconceptions</a></h2>
 <p>There are a couple misconceptions about UB that often muddy the water when talking about it.</p>
-<h3 id="if-it-works-its-sound"><a class="header" href="#if-it-works-its-sound">&quot;If it works, it's sound&quot;</a></h3>
+<h3 id="if-it-works-its-sound"><a class="header" href="#if-it-works-its-sound">"If it works, it's sound"</a></h3>
 <p>Undefined Behavior may be present even if the compiler does end up compiling the
 code according to the programmer's intent. A future version of the compiler may
 behave differently, or future changes to an innocuous portion of the code may
 cause it to fall to the other side of an invisible threshold. Technically it
 may even compile differently but only on Tuesdays, though that type of
 nondeterminism is generally rare.</p>
-<h3 id="ub-is-about-what-the-optimizer-is-allowed-to-do"><a class="header" href="#ub-is-about-what-the-optimizer-is-allowed-to-do">&quot;UB is about what the optimizer is allowed to do&quot;</a></h3>
+<h3 id="ub-is-about-what-the-optimizer-is-allowed-to-do"><a class="header" href="#ub-is-about-what-the-optimizer-is-allowed-to-do">"UB is about what the optimizer is allowed to do"</a></h3>
 <p>This is to <em>some extent</em> true but the actual situation is far more nuanced.</p>
-<p>It's common for people to think about UB in terms of what an optimizer &quot;is and
-isn't allowed to do&quot;, and in terms of optimizations they know can occur. For
+<p>It's common for people to think about UB in terms of what an optimizer "is and
+isn't allowed to do", and in terms of optimizations they know can occur. For
 example, it's pretty straightforward to see that sneakily writing to memory
 that you're not supposed to can cause undefined behavior when the optimizer
 decides to elide a memory read that occurs after your illicit write.</p>

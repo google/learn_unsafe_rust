@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -30,15 +30,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -60,19 +62,16 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
             var sidebar = null;
             var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
@@ -82,43 +81,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../undefined_behavior.html"><strong aria-hidden="true">2.</strong> Undefined behavior</a></li><li class="chapter-item expanded "><a href="../core_unsafety.html"><strong aria-hidden="true">3.</strong> Core unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../core_unsafety/dangling_and_unaligned_pointers.html"><strong aria-hidden="true">3.1.</strong> Dangling and unaligned pointers</a></li><li class="chapter-item expanded "><a href="../core_unsafety/invalid_values.html"><strong aria-hidden="true">3.2.</strong> Invalid values</a></li><li class="chapter-item expanded "><a href="../core_unsafety/data_races.html"><strong aria-hidden="true">3.3.</strong> Data races</a></li><li class="chapter-item expanded "><a href="../core_unsafety/intrinsics.html"><strong aria-hidden="true">3.4.</strong> Intrinsics</a></li><li class="chapter-item expanded "><a href="../core_unsafety/abi_and_ffi.html"><strong aria-hidden="true">3.5.</strong> ABI and FFI</a></li><li class="chapter-item expanded "><a href="../core_unsafety/platform_features.html"><strong aria-hidden="true">3.6.</strong> Platform features</a></li><li class="chapter-item expanded "><a href="../core_unsafety/inline_assembly.html"><strong aria-hidden="true">3.7.</strong> Inline assembly</a></li></ol></li><li class="chapter-item expanded "><a href="../advanced_unsafety.html"><strong aria-hidden="true">4.</strong> Advanced unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../advanced_unsafety/uninitialized.html" class="active"><strong aria-hidden="true">4.1.</strong> Uninitialized memory</a></li><li class="chapter-item expanded "><a href="../advanced_unsafety/pointer_aliasing.html"><strong aria-hidden="true">4.2.</strong> Pointer aliasing</a></li><li class="chapter-item expanded "><a href="../advanced_unsafety/immutable_data.html"><strong aria-hidden="true">4.3.</strong> Immutable data</a></li><li class="chapter-item expanded "><a href="../advanced_unsafety/atomic_ordering.html"><strong aria-hidden="true">4.4.</strong> Atomic ordering</a></li><li class="chapter-item expanded "><a href="../advanced_unsafety/pinning.html"><strong aria-hidden="true">4.5.</strong> Pinning</a></li><li class="chapter-item expanded "><a href="../advanced_unsafety/variance.html"><strong aria-hidden="true">4.6.</strong> Variance</a></li></ol></li><li class="chapter-item expanded "><a href="../expert_unsafety.html"><strong aria-hidden="true">5.</strong> Expert unsafety</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../expert_unsafety/stacked_borrows.html"><strong aria-hidden="true">5.1.</strong> Stacked borrows</a></li><li class="chapter-item expanded "><a href="../expert_unsafety/pointer_provenance.html"><strong aria-hidden="true">5.2.</strong> Pointer provenance</a></li></ol></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
-
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -173,14 +154,14 @@
                     <main>
                         <h1 id="uninitialized-memory"><a class="header" href="#uninitialized-memory">Uninitialized memory</a></h1>
 <blockquote>
-<p><em>&quot;I'm Nobody! Who are you? Are you — Nobody — too?&quot;</em></p>
+<p><em>"I'm Nobody! Who are you? Are you — Nobody — too?"</em></p>
 <p>— <em>Emily Dickinson</em></p>
 </blockquote>
 <p>While we have covered <a href="../core_unsafety/invalid_values.html">invalid values</a>, there's another thing that is a kind of invalid value, but has nothing to do with actual bit patterns: Uninitialized memory.</p>
 <h2 id="safely-working-with-uninitialized-memory"><a class="header" href="#safely-working-with-uninitialized-memory">Safely working with uninitialized memory</a></h2>
 <p>The basic rule of thumb is: never refer to uninitialized memory with anything other than a raw pointer or something wrapped in <a href="https://doc.rust-lang.org/stable/std/mem/union.MaybeUninit.html"><code>MaybeUninit&lt;T&gt;</code></a>. Having a stack value or temporary that is uninitialized and has a type that is not <code>MaybeUninit&lt;T&gt;</code>  (or an array of <code>MaybeUninit</code>s) is always undefined behavior.</p>
-<p>A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as &quot;byte value #257&quot;), but can be introduced in the abstract machine in various ways, and makes <em>most</em> values invalid.</p>
-<p>Any attempt to read uninitialized bytes as a &quot;type that cares about initializedness&quot; will be UB, and the presence of this byte in non-padding locations is considered UB for most types. Most types care about initialized-ness; and the list of types that doesn't derives from treating initializedness as a property of the byte:</p>
+<p>A good model for uninitialized memory is that there's an additional value that does not map to any concrete bit pattern (think of it as "byte value #257"), but can be introduced in the abstract machine in various ways, and makes <em>most</em> values invalid.</p>
+<p>Any attempt to read uninitialized bytes as a "type that cares about initializedness" will be UB, and the presence of this byte in non-padding locations is considered UB for most types. Most types care about initialized-ness; and the list of types that doesn't derives from treating initializedness as a property of the byte:</p>
 <ul>
 <li>Zero-sized types do not care about initializedness, since they do not have bytes</li>
 <li>Unions do not care about initializedness if they have a variant that does not care about initialized-ness</li>
@@ -200,8 +181,8 @@
 <p><code>mem::uninitialized()</code> is exactly equivalent to <code>MaybeUninit::uninit().assume_init()</code>, but it is deprecated since <code>MaybeUninit</code> actually provides the flexibility needed to deal with uninitialized memory safely.</p>
 <h3 id="padding"><a class="header" href="#padding">Padding</a></h3>
 <p>Padding bytes in structs and enums are <a href="https://github.com/rust-lang/unsafe-code-guidelines/blob/master/reference/src/glossary.md#padding">usually but not always uninitialized</a>. This means that treating a struct as a bag of bytes (by, say, treating <code>&amp;Struct</code> as <code>&amp;[u8; size_of::&lt;Struct&gt;()]</code> and reading from there) is UB even if you don't write invalid values to those bytes, since you are accessing uninitialized <code>u8</code>s.</p>
-<p>The &quot;usually but not always&quot; caveat can be usefully framed as &quot;padding bytes are uninitialized unless proven otherwise&quot;. Padding is a property of the <em>access</em> (i.e., the <em>type</em>), not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type<sup class="footnote-reference"><a href="#1">1</a></sup>, and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.</p>
-<p>For example, treating an initialized byte buffer as an <code>&amp;Struct</code> and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an <code>&amp;mut Struct</code> and then writing a new <code>Struct</code> to it will lead to those bytes becoming uninitialized since the <code>Struct</code> copy will &quot;copy&quot; the uninitialized padding bytes. Similarly, using <code>mem::transmute()</code> (or <code>mem::zeroed()</code>) to transmute a byte buffer to a <code>Struct</code> will uninitialize the padding because it performs a typed copy of the <code>Struct</code>.</p>
+<p>The "usually but not always" caveat can be usefully framed as "padding bytes are uninitialized unless proven otherwise". Padding is a property of the <em>access</em> (i.e., the <em>type</em>), not memory, and these bytes are set to being uninitialized whenever a type is created or copied/moved around, but they can be written to by getting a reference to the memory behind the type<sup class="footnote-reference"><a href="#1">1</a></sup>, and will be preserved at that spot in memory as long as the type isn't overwritten as a whole.</p>
+<p>For example, treating an initialized byte buffer as an <code>&amp;Struct</code> and then later reading the padding bytes will give initialized values. However, treating an initialized byte buffer as an <code>&amp;mut Struct</code> and then writing a new <code>Struct</code> to it will lead to those bytes becoming uninitialized since the <code>Struct</code> copy will "copy" the uninitialized padding bytes. Similarly, using <code>mem::transmute()</code> (or <code>mem::zeroed()</code>) to transmute a byte buffer to a <code>Struct</code> will uninitialize the padding because it performs a typed copy of the <code>Struct</code>.</p>
 <p>Because <a href="https://doc.rust-lang.org/stable/std/ptr/fn.copy.html"><code>ptr::copy</code></a> is an untyped copy, it can be used to copy over explicitly-initialized padding.</p>
 <p>See the discussion in [UGC #395][ugc395] for more examples.</p>
 <h3 id="unions"><a class="header" href="#unions">Unions</a></h3>
@@ -227,17 +208,17 @@ unsafe {
     let ghost = ptr::read(ptr);
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Any type of move will do this, even when you &quot;move&quot; the value into a different variable with stuff like <code>let y = x;</code>.</p>
+<p>Any type of move will do this, even when you "move" the value into a different variable with stuff like <code>let y = x;</code>.</p>
 <p>This isn't <em>quite</em> uninitialized: it's just that using after a move is straight up UB in Rust, much like reading from freed memory. In particular, unlike most pointers to uninitialized values, this dangling pointer is unsound to <em>write</em> to as well.</p>
 <p>Working with dangling pointers can often lead to similar problems as working with uninitialized values.</p>
-<p>Note that Rust does let you &quot;partially move&quot; out of fields of a struct, in such a case the whole struct is now no longer a valid value for its type, but you are still allowed to &quot;use&quot; the struct to look at other fields, and the value as a whole is no longer usable. When doing such things, make sure there are no pointers that still think the struct is whole and valid.</p>
+<p>Note that Rust does let you "partially move" out of fields of a struct, in such a case the whole struct is now no longer a valid value for its type, but you are still allowed to "use" the struct to look at other fields, and the value as a whole is no longer usable. When doing such things, make sure there are no pointers that still think the struct is whole and valid.</p>
 <h4 id="caveat-ptrdrop_in_place-manuallydropdrop-and-ptrread"><a class="header" href="#caveat-ptrdrop_in_place-manuallydropdrop-and-ptrread">Caveat: <code>ptr::drop_in_place()</code>, <code>ManuallyDrop::drop()</code>, and <code>ptr::read()</code></a></h4>
 <p><a href="https://doc.rust-lang.org/stable/std/ptr/fn.drop_in_place.html"><code>ptr::drop_in_place()</code></a> and <a href="https://doc.rust-lang.org/stable/std/mem/struct.ManuallyDrop.html#method.drop"><code>ManuallyDrop::drop()</code></a> are interesting: they both call the destructor<sup class="footnote-reference"><a href="#2">2</a></sup> on a value (or a pointed-to value in the case of <code>drop_in_place</code>). From the perspective of safety they are identical; they are just different APIs for dealing with manually calling destructors.</p>
 <p><a href="https://doc.rust-lang.org/stable/std/mem/struct.ManuallyDrop.html#method.drop"><code>ManuallyDrop::drop()</code></a> makes the following claim:</p>
 <blockquote>
 <p>Other than changes made by the destructor itself, the memory is left unchanged, and so as far as the compiler is concerned still holds a bit-pattern which is valid for the type T.</p>
 </blockquote>
-<p>In other words, Rust does <em>not</em> consider these operations to do the same invalidation as a regular &quot;move from&quot; operation, even though they may have a similar feel. They do not create dangling pointers, and they do not themselves overwrite the memory with an uninitialized value.</p>
+<p>In other words, Rust does <em>not</em> consider these operations to do the same invalidation as a regular "move from" operation, even though they may have a similar feel. They do not create dangling pointers, and they do not themselves overwrite the memory with an uninitialized value.</p>
 <p>There is an <a href="https://github.com/rust-lang/unsafe-code-guidelines/issues/394">open issue</a> about whether <code>Drop::drop()</code> is itself allowed to produce uninitialized or invalid memory, so it may not be possible to rely on this in a generic context.</p>
 <p><a href="https://doc.rust-lang.org/stable/std/ptr/fn.read.html"><code>ptr::read()</code></a> similarly claims that it leaves the source memory untouched, which means that it is still a valid value. Of course, <a href="https://doc.rust-lang.org/stable/std/ptr/fn.read.html"><code>ptr::read()</code></a> on a pointer pointing to uninitialized memory will still create an uninitialized value.</p>
 <p>For all of these APIs, actually <em>using</em> the dropped or read-from memory may still be fraught depending on the invariants of the value; it's quite easy to cause a double-free by materializing an owned value from the original data after it has already been read-from or dropped.</p>
@@ -254,7 +235,7 @@ unsafe {
 let ptr: *mut String = val.as_mut_ptr();
 unsafe {
     // UB!
-    *ptr = String::from(&quot;hello world&quot;);
+    *ptr = String::from("hello world");
 }
 <span class="boring">}</span></code></pre></pre>
 <p>This is UB because writing to raw pointers, under the hood, still calls destructors on the old value, the same way a write to an <code>&amp;mut T</code> does. This is usually quite convenient, but here the old value is uninitialized, and calling a destructor on it is undefined.</p>
@@ -263,8 +244,12 @@ unsafe {
 <p>This is largely similar to the situation for <a href="../core_unsafety/invalid_values.html">invalid values</a>: The compiler is allowed to assume memory is never uninitialized, and since uninitialized memory is a kind of invalid value, all of the failure modes of <a href="../core_unsafety/invalid_values.html">invalid values</a> are possible.</p>
 <p>Often when reading from uninitialized memory you'll see reads to the same, unchanged, memory producing different values.</p>
 <p>This is not an exhaustive list: ultimately, having an uninitialized value is UB and it remains illegal even if there are no optimizations that will break.</p>
-<p><sup class="footnote-reference"><a href="#1">1</a></sup>: Be sure to use <code>&amp;[MaybeUninit&lt;u8&gt;]</code> if treating a type with uninitialized padding as manipulatable memory!
-<sup class="footnote-reference"><a href="#2">2</a></sup>: The &quot;destructor&quot; is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as &quot;drop glue&quot;). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the destructor is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>Be sure to use <code>&amp;[MaybeUninit&lt;u8&gt;]</code> if treating a type with uninitialized padding as manipulatable memory!</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>The "destructor" is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the destructor is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
+</div>
 
                     </main>
 
@@ -274,7 +259,7 @@ unsafe {
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../advanced_unsafety/pointer_aliasing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../advanced_unsafety/invalid_values.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -288,7 +273,7 @@ unsafe {
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../advanced_unsafety/pointer_aliasing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../advanced_unsafety/invalid_values.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
