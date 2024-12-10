@@ -174,5 +174,5 @@ This is not an exhaustive list: ultimately, having an uninitialized value is UB 
  [`ptr::copy`]: https://doc.rust-lang.org/stable/std/ptr/fn.copy.html
 
  [^1]: Be sure to use `&[MaybeUninit<u8>]` if treating a type with uninitialized padding as manipulatable memory!
- [^2]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the destructor is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
+ [^2]: The "destructor" is different from the `Drop` trait. Calling the destructor is the process of calling a type's `Drop::drop` impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not _just_ `Drop`, but rather the entire _destruction_, of which the `Drop` is one part. Types that do not implement `Drop` may still have contentful destructors if their transitive fields do.
  
