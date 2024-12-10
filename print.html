@@ -441,7 +441,7 @@ unsafe {
 <p>Be sure to use <code>&amp;[MaybeUninit&lt;u8&gt;]</code> if treating a type with uninitialized padding as manipulatable memory!</p>
 </div>
 <div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
-<p>The "destructor" is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the destructor is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
+<p>The "destructor" is different from the <code>Drop</code> trait. Calling the destructor is the process of calling a type's <code>Drop::drop</code> impl if it exists, and then calling the destructor for all of its fields (also known as "drop glue"). I.e. it's not <em>just</em> <code>Drop</code>, but rather the entire <em>destruction</em>, of which the <code>Drop</code> is one part. Types that do not implement <code>Drop</code> may still have contentful destructors if their transitive fields do.</p>
 </div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="invalid-values"><a class="header" href="#invalid-values">Invalid values</a></h1>
 <blockquote>
