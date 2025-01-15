@@ -159,9 +159,9 @@ arrangement of safe code can cause undefined behavior. That's a lot to consider!
 The "safety conditions" for unsafe traits and functions are just the conditions
 under which it does not trigger undefined behavior. These conditions aren't
 checked by the compiler, they're checked by the people who write the code
-itself. Therefore, unsafe blocks must be manually checked to verify that the
-code written upholds all of the conditions required to avoid undefined behavior.
-Any unsafe code that can trigger undefined behavior _even when its safety
+itself. Therefore, unsafe impls and blocks must be manually checked to verify
+that the code written upholds all of the conditions required to avoid undefined
+behavior. Any unsafe code that can trigger undefined behavior _when its safety
 conditions are upheld_ is unsound.
 
 
