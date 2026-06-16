@@ -13,5 +13,5 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: (test -x $HOME/.cargo/bin/mdbook || cargo install --vers "^0.4" mdbook)
+      - run: (test -x $HOME/.cargo/bin/mdbook || cargo install --vers "^0.5" mdbook)
       - run: mdbook build && mdbook test

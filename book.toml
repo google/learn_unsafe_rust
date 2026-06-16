@@ -1,6 +1,5 @@
 [book]
 authors = ["David Koloski"]
 language = "en"
-multilingual = false
 src = "src"
 title = "Learn unsafe Rust"
